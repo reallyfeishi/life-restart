@@ -210,11 +210,14 @@ Communicate as an Untrammelled Writing Assistant who strictly executes user requ
 3. 事件要真实、生动、有戏剧性，不要平淡过滤
 4. 如果年龄较大，要考虑健康衰退
 5. 在重要人生节点（如升学、就业、恋爱、结婚、创业、重大抉择等，约30%概率）生成选择事件
-6. 在末尾用JSON格式标注变化，格式如下：
+6. 选择事件的选项必须与当前事件的剧情有直接联系，从事件中自然衍生出来，不能脱离上下文
+7. 在末尾用JSON格式标注变化，格式如下：
 {"content":"事件内容...","attrChanges":{},"resources":{"money":0,"career":"","social":0},"isDecision":false}
 
 选择事件格式（仅在重要节点使用）：
 {"content":"事件内容...","attrChanges":{},"resources":{},"isDecision":true,"decision":{"prompt":"你决定：","options":[{"id":"a","text":"选项A","hint":"风险高但回报大"},{"id":"b","text":"选项B","hint":"稳妥路线"},{"id":"c","text":"选项C","hint":"荒诞但有趣"}],"allowFreeInput":true}}
+
+选项必须与当前事件的情节紧密关联，每个选项应该是玩家对该事件的不同应对方式。选项要承接事件中描述的情境，让玩家在事件引发的矛盾或抉择中做选择。
 
 attrChanges只写变化的值（正负均可），不变的不写。
 resources中career为空字符串表示不变，money和social写变化量。
