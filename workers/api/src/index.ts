@@ -213,7 +213,8 @@ function buildEventPrompt(
 种族：${identity.race}
 当前属性：颜值${attributes.appearance} 智力${attributes.intelligence} 体质${attributes.constitution} 家境${attributes.wealth}
 天赋：${talents.map((t: { name: string }) => t.name).join('、')}
-**天赋说明：天赋是玩家自带的特性，不要在事件正文中反复提及天赋名称。天赋只需在后台默默影响事件的走向和结果——例如"过目不忘"让学习事件更容易成功，"天煞孤星"让社交事件更容易失败。天赋的存在感要低，只在相关事件的结果中自然体现。属性值会因事件而发生小幅变化（如考试成功智力+1），请在attrChanges中如实反映。**
+**天赋说明：天赋是玩家自带的特性，不要在事件正文中反复提及天赋名称。天赋只需在后台默默影响事件的走向和结果——例如"过目不忘"让学习事件更容易成功，"天煞孤星"让社交事件更容易失败。天赋的存在感要低，只在相关事件的结果中自然体现。**
+**属性变化规则：颜值、智力可以在日常事件中发生小幅变化（±1），但体质只能在重大抉择事件中发生变化——不要在普通事件的attrChanges中写体质变化！体质代表健康/寿命，只有通过重大选择的结果（如冒险受伤、极限挑战等）才能增减。**
 当前状态：金钱${resources.money} 职业${resources.career} 社交${resources.social}
 之前的事件：${recentEvents || '无'}
 ${decisionContext}
