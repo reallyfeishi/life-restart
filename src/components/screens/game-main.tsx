@@ -85,7 +85,7 @@ export function GameMain() {
           ))}
         </div>
 
-        {/* Attribute bars */}
+        {/* Attribute values */}
         <div className="grid grid-cols-4 gap-2 mb-2">
           {[
             { name: '颜值', value: state.attributes.appearance },
@@ -94,16 +94,8 @@ export function GameMain() {
             { name: '家境', value: state.attributes.wealth },
           ].map((attr) => (
             <div key={attr.name} className="flex flex-col items-center">
-              <span className="text-[11px] text-text-aux mb-1">{attr.name}</span>
-              <div className="flex gap-0.5">
-                {[...Array(10)].map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-3 h-1.5 rounded-sm ${i < attr.value ? 'bg-[#4a6fa5]' : 'bg-border/40'}`}
-                  />
-                ))}
-              </div>
-              <span className="text-xs font-bold font-serif-sc text-text-title mt-0.5">{attr.value}</span>
+              <span className="text-[11px] text-text-aux">{attr.name}</span>
+              <span className="text-sm font-bold font-serif-sc text-text-title">{attr.value}</span>
             </div>
           ))}
         </div>
