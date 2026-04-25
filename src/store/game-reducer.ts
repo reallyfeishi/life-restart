@@ -113,13 +113,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const { age, event } = action.payload;
       // Apply attribute changes
       const newAttrs = { ...state.attributes };
+      const attrKeyMap: Record<string, keyof typeof state.attributes> = {
+        appearance: 'appearance', intelligence: 'intelligence',
+        constitution: 'constitution', wealth: 'wealth',
+        颜值: 'appearance', 智力: 'intelligence', 体质: 'constitution', 家境: 'wealth',
+      };
       if (event.attrChanges) {
         const isDecision = event.isDecision === true;
         for (const [key, value] of Object.entries(event.attrChanges)) {
-          if (key in newAttrs) {
-            // constitution and talents can only change via decision events
-            if (key === 'constitution' && !isDecision) continue;
-            (newAttrs as Record<string, number>)[key] = Math.max(0, Math.min(10, (newAttrs as Record<string, number>)[key] + (value as number)));
+          const mappedKey = attrKeyMap[key];
+          if (mappedKey) {
+            if (mappedKey === 'constitution' && !isDecision) continue;
+            newAttrs[mappedKey] = Math.max(0, Math.min(10, newAttrs[mappedKey] + (value as number)));
           }
         }
       }

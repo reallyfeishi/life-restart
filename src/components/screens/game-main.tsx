@@ -144,19 +144,26 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
               )}
             </div>
             <p className="text-text-body text-sm leading-relaxed">{event.content}</p>
-            {event.attrChanges && Object.values(event.attrChanges).some(v => v !== 0) && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {Object.entries(event.attrChanges).map(([key, value]) => {
-                  if (value === 0) return null;
-                  const label = key === 'appearance' ? '颜值' : key === 'intelligence' ? '智力' : key === 'constitution' ? '体质' : '家境';
-                  return (
-                    <span key={key} className={`text-xs font-semibold ${value > 0 ? 'text-[#5a8c5a]' : 'text-[#b05050]'}`}>
-                      {label}{value > 0 ? '+' : ''}{value}
-                    </span>
-                  );
-                })}
-              </div>
-            )}
+            {event.attrChanges && Object.values(event.attrChanges).some(v => v !== 0) && (() => {
+              // Merge duplicate attribute keys into a single change
+              const merged: Record<string, number> = {};
+              for (const [key, value] of Object.entries(event.attrChanges)) {
+                merged[key] = (merged[key] || 0) + (value as number);
+              }
+              const labels: Record<string, string> = { appearance: '颜值', intelligence: '智力', constitution: '体质', wealth: '家境' };
+              return (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {Object.entries(merged).map(([key, value]) => {
+                    if (value === 0) return null;
+                    return (
+                      <span key={key} className={`text-xs font-semibold ${value > 0 ? 'text-[#5a8c5a]' : 'text-[#b05050]'}`}>
+                        {labels[key] || key}{value > 0 ? '+' : ''}{value}
+                      </span>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         ))}
 
