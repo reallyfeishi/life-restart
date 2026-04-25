@@ -184,6 +184,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       // Check if this is a decision event
       if (event.isDecision && event.decision) {
         dispatch({ type: 'SET_PENDING_DECISION', payload: { age: newAge, decision: event.decision } });
+        dispatch({ type: 'SET_AUTO_PLAY', payload: false });
       }
 
       applyEventChanges(event, newAge);
