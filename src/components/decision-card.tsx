@@ -74,6 +74,11 @@ export function DecisionCard({ decision, age, selectedOption, onSelect, onConfir
                 onSelect(null);
                 onCustomInput(e.target.value);
               }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && canConfirm) {
+                  onConfirm();
+                }
+              }}
               className="w-full bg-transparent text-sm text-text-title placeholder-text-aux/50 outline-none"
             />
           </div>

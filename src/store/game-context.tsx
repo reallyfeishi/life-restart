@@ -234,7 +234,10 @@ export function useGame() {
 }
 
 function checkDeath(age: number, attrs: Attributes, talents: Talent[]): { isDead: boolean; reason: string } {
-  // Base death chance increases with age
+  // 只有60岁以上才可能自然死亡（老死）
+  if (age < 60) return { isDead: false, reason: '' };
+
+  // 其他死亡由重大抉择的后果驱动，不在这里随机判定
   const hasImmortalBody = talents.some(t => t.id === 'immortal_body');
   const hasDeathResist = talents.some(t => t.effects.some(e => e.type === 'death_resist'));
 
@@ -245,26 +248,18 @@ function checkDeath(age: number, attrs: Attributes, talents: Talent[]): { isDead
   if (hasImmortalBody) deathChance *= 0.3;
   if (hasDeathResist) deathChance *= 0.7;
 
-  // Constitution reduces death chance
   deathChance -= attrs.constitution * 0.3;
   deathChance = Math.max(0, deathChance);
 
-  // Random death check
   const roll = Math.random() * 100;
   if (roll < deathChance) {
-    const reasons = [
-      '因病去世', '安详离世', '寿终正寝', '一场意外',
-      age > 100 ? '超越凡人的极限' : '命运的召唤',
-    ];
+    const reasons = age > 100
+      ? ['安详离世', '寿终正寝', '超越凡人的极限']
+      : ['安详离世', '寿终正寝', '因病去世'];
     return {
       isDead: true,
-      reason: reasons[Math.floor(Math.random() * Math.min(3 + Math.floor(age / 30), reasons.length))],
+      reason: reasons[Math.floor(Math.random() * reasons.length)],
     };
-  }
-
-  // Very low constitution can cause early death
-  if (attrs.constitution <= 0 && age > 5) {
-    return { isDead: true, reason: '体弱多病，不治而亡' };
   }
 
   return { isDead: false, reason: '' };

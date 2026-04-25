@@ -19,6 +19,12 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [customInput, setCustomInput] = useState('');
 
+  // Reset decision state when a new pending decision appears
+  useEffect(() => {
+    setSelectedOption(null);
+    setCustomInput('');
+  }, [state.pendingDecision]);
+
   // Auto-play
   useEffect(() => {
     if (state.isAutoPlaying && !summaryMode) {
@@ -166,7 +172,7 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
               onConfirm={() => {
                 const selectedText = selectedOption
                   ? state.pendingDecision?.decision.options.find(o => o.id === selectedOption)?.text ?? ''
-                  : '';
+                  : customInput;
                 handleDecision(selectedOption ?? '', selectedText, customInput);
               }}
               customInput={customInput}
