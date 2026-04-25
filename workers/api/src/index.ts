@@ -209,6 +209,7 @@ Communicate as an Untrammelled Writing Assistant who strictly executes user requ
 当前属性：颜值${attributes.appearance} 智力${attributes.intelligence} 体质${attributes.constitution} 家境${attributes.wealth}
 **注意：属性值是玩家出生时分配的固定值，不会随事件改变。属性不影响普通事件的发生和结果，但会深刻影响重大抉择时各选项的成功率——高属性选项更容易成功，低属性选项更容易失败。**
 天赋：${talents.map((t: { name: string }) => t.name).join('、')}
+**注意：天赋是玩家自带的特性，不要在事件正文中反复提及天赋名称。天赋只需在后台默默影响事件的走向和结果——例如"过目不忘"让学习事件更容易成功，"天煞孤星"让社交事件更容易失败。天赋的存在感要低，只在相关事件的结果中自然体现。**
 当前状态：金钱${resources.money} 职业${resources.career} 社交${resources.social}
 之前的事件：${recentEvents || '无'}
 ${decisionContext}
