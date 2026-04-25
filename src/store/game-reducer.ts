@@ -119,11 +119,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         颜值: 'appearance', 智力: 'intelligence', 体质: 'constitution', 家境: 'wealth',
       };
       if (event.attrChanges) {
-        const isDecision = event.isDecision === true;
         for (const [key, value] of Object.entries(event.attrChanges)) {
           const mappedKey = attrKeyMap[key];
           if (mappedKey) {
-            if (mappedKey === 'constitution' && !isDecision) continue;
             newAttrs[mappedKey] = Math.max(0, Math.min(10, newAttrs[mappedKey] + (value as number)));
           }
         }
