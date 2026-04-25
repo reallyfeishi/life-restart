@@ -87,29 +87,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const applyEventChanges = useCallback((event: GameEvent, newAge: number) => {
-    const newAttrs = { ...state.attributes };
-    if (event.attrChanges) {
-      for (const [key, value] of Object.entries(event.attrChanges)) {
-        if (key in newAttrs) {
-          (newAttrs as Record<string, number>)[key] = Math.max(0, Math.min(10, (newAttrs as Record<string, number>)[key] + (value as number)));
-        }
-      }
-      setAttributes(newAttrs);
-    }
-    if (event.resources) {
-      const newResources: Partial<{ money: number; career: string; social: number }> = {};
-      if (event.resources.money !== undefined) newResources.money = (state.resources.money || 0) + (event.resources.money as number);
-      if (event.resources.career) newResources.career = event.resources.career;
-      if (event.resources.social !== undefined) newResources.social = (state.resources.social || 0) + (event.resources.social as number);
-      updateResources(newResources);
-    }
-    addEvent(event);
-    dispatch({ type: 'SET_CURRENT_AGE', payload: newAge });
-    const deathResult = checkDeath(newAge, newAttrs, state.talents);
-    if (deathResult.isDead) {
-      setDeath(newAge, deathResult.reason);
-    }
-  }, [state.attributes, state.resources, state.talents, addEvent, setAttributes, setDeath, updateResources]);
+    dispatch({ type: 'APPLY_EVENT_RESULT', payload: { age: newAge, event } });
+  }, [dispatch]);
 
   const handleDecision = useCallback((optionId: string, optionText: string, customInput?: string) => {
     dispatch({ type: 'SET_PENDING_DECISION', payload: null });
@@ -231,36 +210,4 @@ export function useGame() {
   const ctx = useContext(GameContext);
   if (!ctx) throw new Error('useGame must be used within GameProvider');
   return ctx;
-}
-
-function checkDeath(age: number, attrs: Attributes, talents: Talent[]): { isDead: boolean; reason: string } {
-  // 只有60岁以上才可能自然死亡（老死）
-  if (age < 60) return { isDead: false, reason: '' };
-
-  // 其他死亡由重大抉择的后果驱动，不在这里随机判定
-  const hasImmortalBody = talents.some(t => t.id === 'immortal_body');
-  const hasDeathResist = talents.some(t => t.effects.some(e => e.type === 'death_resist'));
-
-  let deathChance = 0;
-  if (age > 60) deathChance += (age - 60) * 0.5;
-  if (age > 80) deathChance += (age - 80) * 1.5;
-  if (age > 100) deathChance += (age - 100) * 3;
-  if (hasImmortalBody) deathChance *= 0.3;
-  if (hasDeathResist) deathChance *= 0.7;
-
-  deathChance -= attrs.constitution * 0.3;
-  deathChance = Math.max(0, deathChance);
-
-  const roll = Math.random() * 100;
-  if (roll < deathChance) {
-    const reasons = age > 100
-      ? ['安详离世', '寿终正寝', '超越凡人的极限']
-      : ['安详离世', '寿终正寝', '因病去世'];
-    return {
-      isDead: true,
-      reason: reasons[Math.floor(Math.random() * reasons.length)],
-    };
-  }
-
-  return { isDead: false, reason: '' };
 }

@@ -22,6 +22,7 @@ export type GameAction =
   | { type: 'SET_MODEL'; payload: string }
   | { type: 'TOGGLE_THINKING' }
   | { type: 'SET_PENDING_DECISION'; payload: { age: number; decision: import('@/types/event').Decision } | null }
+  | { type: 'APPLY_EVENT_RESULT'; payload: { age: number; event: GameEvent } }
   | { type: 'RESET_GAME' };
 
 export const initialState: GameState = {
@@ -107,6 +108,64 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'SET_PENDING_DECISION':
       return { ...state, pendingDecision: action.payload, isAutoPlaying: action.payload === null ? state.isAutoPlaying : false };
+
+    case 'APPLY_EVENT_RESULT': {
+      const { age, event } = action.payload;
+      // Apply attribute changes
+      const newAttrs = { ...state.attributes };
+      if (event.attrChanges) {
+        for (const [key, value] of Object.entries(event.attrChanges)) {
+          if (key in newAttrs) {
+            (newAttrs as Record<string, number>)[key] = Math.max(0, Math.min(10, (newAttrs as Record<string, number>)[key] + (value as number)));
+          }
+        }
+      }
+      // Apply resource changes
+      const newResources = { ...state.resources };
+      if (event.resources) {
+        if (event.resources.money !== undefined) newResources.money = (state.resources.money || 0) + (event.resources.money as number);
+        if (event.resources.career) newResources.career = event.resources.career;
+        if (event.resources.social !== undefined) newResources.social = (state.resources.social || 0) + (event.resources.social as number);
+      }
+
+      // Check death
+      const hasImmortalBody = state.talents.some(t => t.id === 'immortal_body');
+      const hasDeathResist = state.talents.some(t => t.effects?.some(e => e.type === 'death_resist'));
+      let isDead = false;
+      let deathReason = '';
+      if (age >= 60) {
+        let deathChance = 0;
+        if (age > 60) deathChance += (age - 60) * 0.5;
+        if (age > 80) deathChance += (age - 80) * 1.5;
+        if (age > 100) deathChance += (age - 100) * 3;
+        if (hasImmortalBody) deathChance *= 0.3;
+        if (hasDeathResist) deathChance *= 0.7;
+        deathChance -= newAttrs.constitution * 0.3;
+        deathChance = Math.max(0, deathChance);
+        const roll = Math.random() * 100;
+        if (roll < deathChance) {
+          isDead = true;
+          const reasons = age > 100
+            ? ['安详离世', '寿终正寝', '超越凡人的极限']
+            : ['安详离世', '寿终正寝', '因病去世'];
+          deathReason = reasons[Math.floor(Math.random() * reasons.length)];
+        }
+      }
+
+      return {
+        ...state,
+        attributes: newAttrs,
+        resources: newResources,
+        events: [...state.events, event],
+        currentAge: age,
+        pendingDecision: event.isDecision && event.decision ? { age, decision: event.decision } : state.pendingDecision,
+        isAutoPlaying: event.isDecision && event.decision ? false : state.isAutoPlaying,
+        phase: isDead ? 'life-summary' : state.phase,
+        deathAge: isDead ? age : state.deathAge,
+        deathReason: isDead ? deathReason : state.deathReason,
+        ...(isDead ? { isAutoPlaying: false, pendingDecision: null } : {}),
+      };
+    }
 
     case 'RESET_GAME':
       return { ...initialState, unlockedAchievements: state.unlockedAchievements };
