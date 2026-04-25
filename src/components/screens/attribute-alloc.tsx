@@ -10,19 +10,27 @@ const ATTRS = [
   { key: 'wealth' as const, icon: '💰', name: '家境', desc: '家庭经济条件和社会资源' },
 ];
 
-const TOTAL_POINTS = 12;
+const BASE_POINTS = 12;
 
 export function AttributeAlloc() {
   const { state, dispatch, setAttributes } = useGame();
+
+  // Calculate bonus points from talents
+  const bonusPoints = state.talents.reduce((total, talent) => {
+    const pointEffect = talent.effects.find(e => e.type === 'attr_boost' && e.stat === '_points');
+    return total + (pointEffect?.value || 0);
+  }, 0);
+  const totalPoints = BASE_POINTS + bonusPoints;
+
   const [attrs, setAttrs] = useState({
-    appearance: state.attributes.appearance || 1,
-    intelligence: state.attributes.intelligence || 1,
-    constitution: state.attributes.constitution || 1,
-    wealth: state.attributes.wealth || 1,
+    appearance: state.attributes.appearance || 0,
+    intelligence: state.attributes.intelligence || 0,
+    constitution: state.attributes.constitution || 0,
+    wealth: state.attributes.wealth || 0,
   });
 
   const usedPoints = attrs.appearance + attrs.intelligence + attrs.constitution + attrs.wealth;
-  const remaining = TOTAL_POINTS - usedPoints;
+  const remaining = totalPoints - usedPoints;
   const canStart = remaining === 0;
 
   const adjustAttr = useCallback((key: keyof typeof attrs, delta: number) => {
@@ -30,13 +38,13 @@ export function AttributeAlloc() {
       const newVal = prev[key] + delta;
       if (newVal < 0 || newVal > 10) return prev;
       const newUsed = Object.entries({ ...prev, [key]: newVal }).reduce((sum, [, v]) => sum + v, 0);
-      if (newUsed > TOTAL_POINTS) return prev;
+      if (newUsed > totalPoints) return prev;
       return { ...prev, [key]: newVal };
     });
   }, []);
 
   const handleRandom = () => {
-    let points = TOTAL_POINTS;
+    let points = totalPoints;
     const values = [0, 0, 0, 0];
     while (points > 0) {
       const idx = Math.floor(Math.random() * 4);
@@ -77,7 +85,7 @@ export function AttributeAlloc() {
           <span className="text-2xl font-bold font-serif-sc" style={{ color: remaining === 0 ? '#5a8c5a' : '#c4883a' }}>
             {remaining}
           </span>
-          <span className="text-text-aux text-sm">/ {TOTAL_POINTS} 点</span>
+          <span className="text-text-aux text-sm">/ {totalPoints} 点</span>
         </div>
       </div>
 
@@ -86,6 +94,11 @@ export function AttributeAlloc() {
           <p className="text-text-aux text-xs">
             天赋: {state.talents.map((t: { name: string }) => t.name).join(' · ')}
           </p>
+          {bonusPoints > 0 && (
+            <p className="text-text-aux text-xs mt-1" style={{ color: '#5a8c5a' }}>
+              天赋加成: +{bonusPoints} 点属性
+            </p>
+          )}
         </div>
       )}
 

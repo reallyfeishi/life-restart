@@ -2,7 +2,7 @@ import { World } from './world';
 import { Identity } from './identity';
 import { Talent } from './talent';
 import { Attributes } from './attribute';
-import { GameEvent } from './event';
+import { GameEvent, Decision } from './event';
 
 export type GamePhase =
   | 'world-select'
@@ -37,4 +37,5 @@ export interface GameState {
   };
   selectedModel: string;
   disableThinking: boolean;
+  pendingDecision: { age: number; decision: Decision } | null;
 }

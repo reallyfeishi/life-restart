@@ -1,9 +1,9 @@
 'use client';
 
 import { useGame } from '@/store/game-context';
-import { TALENTS } from '@/data/talents';
-import { Talent } from '@/types/talent';
 import { useState, useCallback } from 'react';
+import { Talent } from '@/types/talent';
+import { TALENTS } from '@/data/talents';
 
 const RARITY_COLORS: Record<string, string> = {
   common: '#4a6fa5',
@@ -35,31 +35,13 @@ export function TalentDraw() {
     const talents = drawRandomTalents();
     setDrawnTalents(talents);
     setRevealed(true);
-    setTimeout(() => {
-      const cardEls = document.querySelectorAll('.talent-card');
-      cardEls.forEach((el, i) => {
-        setTimeout(() => el.classList.add('flipped'), i * 300);
-      });
-    }, 200);
   };
 
   const handleRedraw = () => {
     if (redrawCount <= 0) return;
-    setRevealed(false);
-    const cardEls = document.querySelectorAll('.talent-card');
-    cardEls.forEach((el) => el.classList.remove('flipped'));
-    setTimeout(() => {
-      const talents = drawRandomTalents();
-      setDrawnTalents(talents);
-      setRevealed(true);
-      setRedrawCount(prev => prev - 1);
-      setTimeout(() => {
-        const cardEls = document.querySelectorAll('.talent-card');
-        cardEls.forEach((el, i) => {
-          setTimeout(() => el.classList.add('flipped'), i * 300);
-        });
-      }, 200);
-    }, 300);
+    const talents = drawRandomTalents();
+    setDrawnTalents(talents);
+    setRedrawCount(prev => prev - 1);
   };
 
   const handleConfirm = () => {
@@ -93,26 +75,20 @@ export function TalentDraw() {
       </div>
 
       <div className="grid grid-cols-3 gap-3 w-full flex-1">
-        {drawnTalents.map((talent, index) => (
-          <div key={talent.id} className="talent-card h-[180px]">
-            <div className="talent-card-inner">
-              <div className="talent-card-front border border-border bg-bg-card flex items-center justify-center shadow-card">
-                <span className="text-3xl">✦</span>
+        {drawnTalents.map((talent) => (
+          <div
+            key={talent.id}
+            className="border rounded-card bg-bg-card p-3 flex flex-col justify-between shadow-card"
+            style={{ borderColor: RARITY_COLORS[talent.rarity] }}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold" style={{ color: RARITY_COLORS[talent.rarity] }}>
+                  {RARITY_LABELS[talent.rarity]}
+                </span>
               </div>
-              <div
-                className="talent-card-back border rounded-card bg-bg-card p-3 flex flex-col justify-between shadow-card"
-                style={{ borderColor: RARITY_COLORS[talent.rarity] }}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold" style={{ color: RARITY_COLORS[talent.rarity] }}>
-                      {RARITY_LABELS[talent.rarity]}
-                    </span>
-                  </div>
-                  <h4 className="font-serif-sc font-semibold text-sm text-text-title mb-1">{talent.name}</h4>
-                  <p className="text-text-aux text-xs leading-relaxed">{talent.description}</p>
-                </div>
-              </div>
+              <h4 className="font-serif-sc font-semibold text-sm text-text-title mb-1">{talent.name}</h4>
+              <p className="text-text-aux text-xs leading-relaxed">{talent.description}</p>
             </div>
           </div>
         ))}

@@ -21,6 +21,7 @@ export type GameAction =
   | { type: 'UPDATE_RESOURCES'; payload: Partial<{ money: number; career: string; social: number }> }
   | { type: 'SET_MODEL'; payload: string }
   | { type: 'TOGGLE_THINKING' }
+  | { type: 'SET_PENDING_DECISION'; payload: { age: number; decision: import('@/types/event').Decision } | null }
   | { type: 'RESET_GAME' };
 
 export const initialState: GameState = {
@@ -41,6 +42,7 @@ export const initialState: GameState = {
   resources: { money: 0, career: '无业', social: 0 },
   selectedModel: 'glm-5',
   disableThinking: false,
+  pendingDecision: null,
 };
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
@@ -101,6 +103,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'TOGGLE_THINKING':
       return { ...state, disableThinking: !state.disableThinking };
+
+    case 'SET_PENDING_DECISION':
+      return { ...state, pendingDecision: action.payload };
 
     case 'RESET_GAME':
       return { ...initialState, unlockedAchievements: state.unlockedAchievements };

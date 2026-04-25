@@ -4,9 +4,10 @@ import { useGame } from '@/store/game-context';
 import { Talent } from '@/types/talent';
 import { GameEvent } from '@/types/event';
 import { useEffect, useRef } from 'react';
+import { DecisionModal } from '@/components/decision-modal';
 
 export function GameMain() {
-  const { state, nextYear, setAutoPlay } = useGame();
+  const { state, nextYear, setAutoPlay, handleDecision } = useGame();
   const timelineRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -61,7 +62,7 @@ export function GameMain() {
               }`}
               onClick={toggleAutoPlay}
             >
-              ⏩ {state.isAutoPlaying ? '自动播放中' : '自动播放'}
+              ⏩ {state.isAutoPlaying ? '自动播放中' : '自动播放已关闭'}
             </button>
           </div>
         </div>
@@ -173,6 +174,15 @@ export function GameMain() {
           </button>
         )}
       </div>
+
+      {/* Decision Modal */}
+      {state.pendingDecision && (
+        <DecisionModal
+          decision={state.pendingDecision.decision}
+          age={state.pendingDecision.age}
+          onSelect={handleDecision}
+        />
+      )}
     </div>
   );
 }

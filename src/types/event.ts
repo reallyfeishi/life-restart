@@ -1,3 +1,15 @@
+export interface DecisionOption {
+  id: string;
+  text: string;
+  hint: string;
+}
+
+export interface Decision {
+  prompt: string;
+  options: DecisionOption[];
+  allowFreeInput: boolean;
+}
+
 export interface GameEvent {
   age: number;
   content: string;
@@ -7,6 +19,8 @@ export interface GameEvent {
     career?: string;
     social?: number;
   };
+  isDecision?: boolean;
+  decision?: Decision;
   isEasterEgg?: boolean;
   achievementTrigger?: string;
 }

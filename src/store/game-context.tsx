@@ -26,6 +26,7 @@ interface GameContextType {
   updateResources: (resources: Partial<{ money: number; career: string; social: number }>) => void;
   setModel: (model: string) => void;
   toggleThinking: () => void;
+  handleDecision: (optionId: string, customInput?: string) => void;
   resetGame: () => void;
   nextYear: () => Promise<void>;
   isProcessing: boolean;
@@ -85,6 +86,69 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'TOGGLE_THINKING' });
   }, []);
 
+  const applyEventChanges = useCallback((event: GameEvent, newAge: number) => {
+    const newAttrs = { ...state.attributes };
+    if (event.attrChanges) {
+      for (const [key, value] of Object.entries(event.attrChanges)) {
+        if (key in newAttrs) {
+          (newAttrs as Record<string, number>)[key] = Math.max(0, Math.min(10, (newAttrs as Record<string, number>)[key] + (value as number)));
+        }
+      }
+    }
+    if (event.resources) {
+      const newResources: Partial<{ money: number; career: string; social: number }> = {};
+      if (event.resources.money !== undefined) newResources.money = (state.resources.money || 0) + (event.resources.money as number);
+      if (event.resources.career) newResources.career = event.resources.career;
+      if (event.resources.social !== undefined) newResources.social = (state.resources.social || 0) + (event.resources.social as number);
+      updateResources(newResources);
+    }
+    setAttributes(newAttrs);
+    addEvent(event);
+    dispatch({ type: 'SET_CURRENT_AGE', payload: newAge });
+    const deathResult = checkDeath(newAge, newAttrs, state.talents);
+    if (deathResult.isDead) {
+      setDeath(newAge, deathResult.reason);
+    }
+  }, [state.attributes, state.resources, state.talents, addEvent, setAttributes, setDeath, updateResources]);
+
+  const handleDecision = useCallback((optionId: string, customInput?: string) => {
+    dispatch({ type: 'SET_PENDING_DECISION', payload: null });
+    const nextYearWithDecision = async () => {
+      setIsProcessing(true);
+      const newAge = state.currentAge + 1;
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/game/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            age: newAge,
+            attributes: state.attributes,
+            talents: state.talents,
+            events: state.events.slice(-5),
+            world: state.world,
+            identity: state.identity,
+            resources: state.resources,
+            model: state.selectedModel,
+            disableThinking: state.disableThinking,
+            decision: { optionId, customInput },
+          }),
+        });
+        if (!response.ok) throw new Error('生成事件失败');
+        const data = await response.json();
+        const event: GameEvent = { age: newAge, ...data };
+        applyEventChanges(event, newAge);
+      } catch (err) {
+        console.error('handleDecision error:', err);
+        const fallbackEvent: GameEvent = { age: newAge, content: `${newAge}岁，你做出了选择，命运的车轮继续转动。` };
+        addEvent(fallbackEvent);
+        dispatch({ type: 'SET_CURRENT_AGE', payload: newAge });
+      } finally {
+        setIsProcessing(false);
+      }
+    };
+    nextYearWithDecision();
+  }, [state.currentAge, state.attributes, state.talents, state.events, state.world, state.identity, state.resources, state.selectedModel, state.disableThinking, addEvent, applyEventChanges]);
+
   const resetGame = useCallback(() => {
     dispatch({ type: 'RESET_GAME' });
   }, []);
@@ -117,37 +181,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
       const event: GameEvent = { age: newAge, ...data };
 
-      // Apply attribute changes
-      const newAttrs = { ...state.attributes };
-      if (event.attrChanges) {
-        for (const [key, value] of Object.entries(event.attrChanges)) {
-          if (key in newAttrs) {
-            (newAttrs as Record<string, number>)[key] = Math.max(0, Math.min(10, (newAttrs as Record<string, number>)[key] + (value as number)));
-          }
-        }
+      // Check if this is a decision event
+      if (event.isDecision && event.decision) {
+        dispatch({ type: 'SET_PENDING_DECISION', payload: { age: newAge, decision: event.decision } });
       }
 
-      // Apply resource changes
-      if (event.resources) {
-        const newResources: Partial<{ money: number; career: string; social: number }> = {};
-        if (event.resources.money !== undefined) newResources.money = (state.resources.money || 0) + (event.resources.money as number);
-        if (event.resources.career) newResources.career = event.resources.career;
-        if (event.resources.social !== undefined) newResources.social = (state.resources.social || 0) + (event.resources.social as number);
-        updateResources(newResources);
-      }
-
-      setAttributes(newAttrs);
-      addEvent(event);
-      dispatch({ type: 'SET_CURRENT_AGE', payload: newAge });
-
-      // Check death
-      const deathResult = checkDeath(newAge, newAttrs, state.talents);
-      if (deathResult.isDead) {
-        setDeath(newAge, deathResult.reason);
-      }
+      applyEventChanges(event, newAge);
     } catch (err) {
       console.error('nextYear error:', err);
-      // Fallback: generate a simple event
       const fallbackEvent: GameEvent = {
         age: newAge,
         content: `${newAge}岁，平凡地度过了这一年。`,
@@ -157,7 +198,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsProcessing(false);
     }
-  }, [state.currentAge, state.attributes, state.talents, state.events, state.world, state.identity, state.resources, addEvent, setAttributes, setDeath, updateResources, isProcessing]);
+  }, [state.currentAge, state.attributes, state.talents, state.events, state.world, state.identity, state.resources, addEvent, setAttributes, setDeath, updateResources, isProcessing, applyEventChanges]);
 
   return (
     <GameContext.Provider value={{
@@ -175,6 +216,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       updateResources,
       setModel,
       toggleThinking,
+      handleDecision,
       resetGame,
       nextYear,
       isProcessing,
