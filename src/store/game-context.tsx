@@ -87,7 +87,15 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const applyEventChanges = useCallback((event: GameEvent, newAge: number) => {
-    // 属性不受事件影响，始终保持初始值
+    const newAttrs = { ...state.attributes };
+    if (event.attrChanges) {
+      for (const [key, value] of Object.entries(event.attrChanges)) {
+        if (key in newAttrs) {
+          (newAttrs as Record<string, number>)[key] = Math.max(0, Math.min(10, (newAttrs as Record<string, number>)[key] + (value as number)));
+        }
+      }
+      setAttributes(newAttrs);
+    }
     if (event.resources) {
       const newResources: Partial<{ money: number; career: string; social: number }> = {};
       if (event.resources.money !== undefined) newResources.money = (state.resources.money || 0) + (event.resources.money as number);
@@ -97,11 +105,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }
     addEvent(event);
     dispatch({ type: 'SET_CURRENT_AGE', payload: newAge });
-    const deathResult = checkDeath(newAge, state.attributes, state.talents);
+    const deathResult = checkDeath(newAge, newAttrs, state.talents);
     if (deathResult.isDead) {
       setDeath(newAge, deathResult.reason);
     }
-  }, [state.attributes, state.resources, state.talents, addEvent, setDeath, updateResources]);
+  }, [state.attributes, state.resources, state.talents, addEvent, setAttributes, setDeath, updateResources]);
 
   const handleDecision = useCallback((optionId: string, optionText: string, customInput?: string) => {
     dispatch({ type: 'SET_PENDING_DECISION', payload: null });
