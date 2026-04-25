@@ -26,7 +26,7 @@ interface GameContextType {
   updateResources: (resources: Partial<{ money: number; career: string; social: number }>) => void;
   setModel: (model: string) => void;
   toggleThinking: () => void;
-  handleDecision: (optionId: string, customInput?: string) => void;
+  handleDecision: (optionId: string, optionText: string, customInput?: string) => void;
   resetGame: () => void;
   nextYear: () => Promise<void>;
   isProcessing: boolean;
@@ -111,7 +111,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.attributes, state.resources, state.talents, addEvent, setAttributes, setDeath, updateResources]);
 
-  const handleDecision = useCallback((optionId: string, customInput?: string) => {
+  const handleDecision = useCallback((optionId: string, optionText: string, customInput?: string) => {
     dispatch({ type: 'SET_PENDING_DECISION', payload: null });
     dispatch({ type: 'SET_AUTO_PLAY', payload: true });
     const nextYearWithDecision = async () => {
@@ -131,7 +131,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             resources: state.resources,
             model: state.selectedModel,
             disableThinking: state.disableThinking,
-            decision: { optionId, customInput },
+            decision: { optionId, optionText, customInput },
           }),
         });
         if (!response.ok) throw new Error('生成事件失败');

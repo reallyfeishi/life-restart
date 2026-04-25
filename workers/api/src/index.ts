@@ -192,11 +192,11 @@ function buildEventPrompt(
   world: { name: string },
   identity: { gender: string; race: string },
   resources: { money: number; career: string; social: number },
-  previousDecision?: { optionId: string; customInput: string }
+  previousDecision?: { optionId: string; optionText: string; customInput: string }
 ) {
   const recentEvents = events.slice(-5).map((e: { age: number; content: string }) => `${e.age}岁：${e.content}`).join('\n');
   const decisionContext = previousDecision
-    ? `上一次选择：玩家选择了 "${previousDecision.optionId}"${previousDecision.customInput ? '，自定义输入："'+previousDecision.customInput+'"' : ''}。新事件必须是这个选择的直接后果或延续，与前文紧密衔接。`
+    ? `上一次选择：玩家明确选择了 "${previousDecision.optionText}"。新事件必须明确反映这个选择的具体后果——绝对不能写成像是选了其他选项的结果。例如：如果玩家选了"签约公司"，事件就要描写签约后的经历，而不是去写"你决定去上大学"。选择的后果要与选项内容直接对应。`
     : '';
   return `你是一个创意写作助手。请为一个"人生重开"游戏生成这一年发生的事件。
 

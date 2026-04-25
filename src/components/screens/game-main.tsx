@@ -158,7 +158,10 @@ export function GameMain() {
               selectedOption={selectedOption}
               onSelect={setSelectedOption}
               onConfirm={() => {
-                handleDecision(selectedOption ?? '', customInput);
+                const selectedText = selectedOption
+                  ? state.pendingDecision?.decision.options.find(o => o.id === selectedOption)?.text ?? ''
+                  : '';
+                handleDecision(selectedOption ?? '', selectedText, customInput);
               }}
               customInput={customInput}
               onCustomInput={setCustomInput}
