@@ -1,0 +1,12 @@
+name = "life-restart-api"
+main = "src/index.ts"
+compatibility_date = "2025-04-25"
+compatibility_flags = ["nodejs_compat"]
+
+# Set AI_API_KEY via: npx wrangler secret put AI_API_KEY
+# Or in Cloudflare dashboard: Workers → life-restart-api → Settings → Variables
+
+[vars]
+AI_BASE_URL = "https://coding.dashscope.aliyuncs.com/v1"
+AI_MODEL = "glm-5"
+AI_TEMPERATURE = "0.3"
