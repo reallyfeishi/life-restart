@@ -82,8 +82,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         deathAge: action.payload.age,
         deathReason: action.payload.reason,
-        phase: 'dead',
+        phase: 'life-summary',
         isAutoPlaying: false,
+        pendingDecision: null,
       };
 
     case 'SET_AUTO_PLAY':

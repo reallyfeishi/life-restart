@@ -11,7 +11,11 @@ import { DeathScreen } from './screens/death-screen';
 import { AI_MODELS, modelSupportsThinking } from '@/lib/ai/client';
 
 export function GameShell() {
-  const { state } = useGame();
+  const { state, dispatch } = useGame();
+
+  const showSummary = () => {
+    dispatch({ type: 'SET_PHASE', payload: 'dead' });
+  };
 
   return (
     <div className="max-w-[460px] mx-auto flex flex-col h-dvh bg-bg-page page-texture relative">
@@ -22,6 +26,7 @@ export function GameShell() {
         {state.phase === 'attribute-alloc' && <AttributeAlloc />}
         {state.phase === 'fate-preview' && <FatePreview />}
         {state.phase === 'playing' && <GameMain />}
+        {state.phase === 'life-summary' && <GameMain summaryMode onConfirmSummary={showSummary} />}
         {state.phase === 'dead' && <DeathScreen />}
       </div>
       <Footer />

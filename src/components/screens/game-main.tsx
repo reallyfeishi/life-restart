@@ -5,8 +5,14 @@ import { Talent } from '@/types/talent';
 import { GameEvent } from '@/types/event';
 import { useEffect, useRef, useState } from 'react';
 import { DecisionCard } from '@/components/decision-card';
+import { LifeSummaryCard } from '@/components/life-summary-card';
 
-export function GameMain() {
+interface GameMainProps {
+  summaryMode?: boolean;
+  onConfirmSummary?: () => void;
+}
+
+export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
   const { state, nextYear, setAutoPlay, handleDecision } = useGame();
   const timelineRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -15,7 +21,7 @@ export function GameMain() {
 
   // Auto-play
   useEffect(() => {
-    if (state.isAutoPlaying) {
+    if (state.isAutoPlaying && !summaryMode) {
       autoPlayRef.current = setInterval(() => {
         nextYear();
       }, state.autoPlaySpeed);
@@ -23,7 +29,7 @@ export function GameMain() {
     return () => {
       if (autoPlayRef.current) clearInterval(autoPlayRef.current);
     };
-  }, [state.isAutoPlaying, state.autoPlaySpeed, nextYear]);
+  }, [state.isAutoPlaying, state.autoPlaySpeed, nextYear, summaryMode]);
 
   // Auto-scroll timeline
   useEffect(() => {
@@ -168,31 +174,40 @@ export function GameMain() {
             />
           </div>
         )}
+
+        {/* Life Summary Card */}
+        {summaryMode && onConfirmSummary && (
+          <div className="animate-fade-in">
+            <LifeSummaryCard onConfirm={onConfirmSummary} />
+          </div>
+        )}
       </div>
 
       {/* Bottom action */}
-      <div className="bg-bg-card border-t border-border px-4 py-3 flex-shrink-0">
-        {state.pendingDecision ? (
-          <div className="text-center text-xs text-text-aux">
-            请做出你的选择
-          </div>
-        ) : state.isAutoPlaying ? (
-          <button
-            className="w-full min-h-[40px] rounded-btn font-semibold text-sm text-text-aux border border-border bg-bg-page cursor-pointer btn-press"
-            onClick={toggleAutoPlay}
-          >
-            暂停播放
-          </button>
-        ) : (
-          <button
-            className="w-full min-h-[40px] rounded-btn font-semibold text-sm text-text-aux border border-border bg-bg-page cursor-pointer btn-press"
-            onClick={nextYear}
-            disabled={state.isAutoPlaying}
-          >
-            轻触，让岁月流转
-          </button>
-        )}
-      </div>
+      {!summaryMode && (
+        <div className="bg-bg-card border-t border-border px-4 py-3 flex-shrink-0">
+          {state.pendingDecision ? (
+            <div className="text-center text-xs text-text-aux">
+              请做出你的选择
+            </div>
+          ) : state.isAutoPlaying ? (
+            <button
+              className="w-full min-h-[40px] rounded-btn font-semibold text-sm text-text-aux border border-border bg-bg-page cursor-pointer btn-press"
+              onClick={toggleAutoPlay}
+            >
+              暂停播放
+            </button>
+          ) : (
+            <button
+              className="w-full min-h-[40px] rounded-btn font-semibold text-sm text-text-aux border border-border bg-bg-page cursor-pointer btn-press"
+              onClick={nextYear}
+              disabled={state.isAutoPlaying}
+            >
+              轻触，让岁月流转
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

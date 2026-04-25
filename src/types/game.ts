@@ -11,6 +11,7 @@ export type GamePhase =
   | 'attribute-alloc'
   | 'fate-preview'
   | 'playing'
+  | 'life-summary'
   | 'dead'
   | 'history'
   | 'achievements';
