@@ -1,0 +1,12 @@
+name = "life-restart-api"
+compatibility_date = "2025-04-25"
+main = "worker/index.ts"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+AI_BASE_URL = "https://coding.dashscope.aliyuncs.com/v1"
+AI_MODEL = "glm-5"
+AI_TEMPERATURE = "0.3"
+
+# Run: npx wrangler secret put AI_API_KEY
+# Then: npx wrangler deploy

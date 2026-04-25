@@ -9,6 +9,7 @@ import { Identity } from '@/types/identity';
 import { Talent } from '@/types/talent';
 import { Attributes } from '@/types/attribute';
 import { GameEvent } from '@/types/event';
+import { API_BASE_URL } from '@/lib/config';
 
 interface GameContextType {
   state: GameState;
@@ -95,7 +96,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     const newAge = state.currentAge + 1;
 
     try {
-      const response = await fetch('/api/game/generate', {
+      const response = await fetch(`${API_BASE_URL}/api/game/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

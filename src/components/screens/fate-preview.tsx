@@ -2,6 +2,7 @@
 
 import { useGame } from '@/store/game-context';
 import { useState, useEffect, useRef } from 'react';
+import { API_BASE_URL } from '@/lib/config';
 
 export function FatePreview() {
   const { state, dispatch, setBackstory, resetGame } = useGame();
@@ -15,7 +16,7 @@ export function FatePreview() {
   useEffect(() => {
     async function fetchBackstory() {
       try {
-        const response = await fetch('/api/game/background', {
+        const response = await fetch(`${API_BASE_URL}/api/game/background`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -56,7 +57,7 @@ export function FatePreview() {
 
   const handleStart = async () => {
     try {
-      await fetch('/api/game/session', {
+      await fetch(`${API_BASE_URL}/api/game/session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
