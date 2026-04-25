@@ -3,13 +3,15 @@
 import { useGame } from '@/store/game-context';
 import { Talent } from '@/types/talent';
 import { GameEvent } from '@/types/event';
-import { useEffect, useRef } from 'react';
-import { DecisionModal } from '@/components/decision-modal';
+import { useEffect, useRef, useState } from 'react';
+import { DecisionCard } from '@/components/decision-card';
 
 export function GameMain() {
   const { state, nextYear, setAutoPlay, handleDecision } = useGame();
   const timelineRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [customInput, setCustomInput] = useState('');
 
   // Auto-play
   useEffect(() => {
@@ -113,7 +115,7 @@ export function GameMain() {
         ref={timelineRef}
         className="flex-1 overflow-y-auto timeline-scroll px-4 py-4 space-y-3"
       >
-        {state.events.length === 0 && (
+        {state.events.length === 0 && !state.pendingDecision && (
           <div className="text-center text-text-aux text-sm py-8">
             你即将开始新的人生...
           </div>
@@ -145,11 +147,33 @@ export function GameMain() {
             )}
           </div>
         ))}
+
+        {/* Inline Decision Card */}
+        {state.pendingDecision && (
+          <div className="animate-fade-in">
+            <DecisionCard
+              key={state.pendingDecision.age}
+              decision={state.pendingDecision.decision}
+              age={state.pendingDecision.age}
+              selectedOption={selectedOption}
+              onSelect={setSelectedOption}
+              onConfirm={() => {
+                handleDecision(selectedOption ?? '', customInput);
+              }}
+              customInput={customInput}
+              onCustomInput={setCustomInput}
+            />
+          </div>
+        )}
       </div>
 
       {/* Bottom action */}
       <div className="bg-bg-card border-t border-border px-4 py-3 flex-shrink-0">
-        {state.isAutoPlaying ? (
+        {state.pendingDecision ? (
+          <div className="text-center text-xs text-text-aux">
+            请做出你的选择
+          </div>
+        ) : state.isAutoPlaying ? (
           <button
             className="w-full min-h-[40px] rounded-btn font-semibold text-sm text-text-aux border border-border bg-bg-page cursor-pointer btn-press"
             onClick={toggleAutoPlay}
@@ -166,15 +190,6 @@ export function GameMain() {
           </button>
         )}
       </div>
-
-      {/* Decision Modal */}
-      {state.pendingDecision && (
-        <DecisionModal
-          decision={state.pendingDecision.decision}
-          age={state.pendingDecision.age}
-          onSelect={handleDecision}
-        />
-      )}
     </div>
   );
 }
