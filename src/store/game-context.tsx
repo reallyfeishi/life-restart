@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, useCallback, useState } from 'react';
+import React, { createContext, useContext, useReducer, useCallback } from 'react';
 import { GameState } from '@/types/game';
 import { gameReducer, initialState } from './game-reducer';
 import type { GameAction } from './game-reducer';
@@ -87,14 +87,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const applyEventChanges = useCallback((event: GameEvent, newAge: number) => {
-    const newAttrs = { ...state.attributes };
-    if (event.attrChanges) {
-      for (const [key, value] of Object.entries(event.attrChanges)) {
-        if (key in newAttrs) {
-          (newAttrs as Record<string, number>)[key] = Math.max(0, Math.min(10, (newAttrs as Record<string, number>)[key] + (value as number)));
-        }
-      }
-    }
+    // 属性不受事件影响，始终保持初始值
     if (event.resources) {
       const newResources: Partial<{ money: number; career: string; social: number }> = {};
       if (event.resources.money !== undefined) newResources.money = (state.resources.money || 0) + (event.resources.money as number);
@@ -102,14 +95,13 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       if (event.resources.social !== undefined) newResources.social = (state.resources.social || 0) + (event.resources.social as number);
       updateResources(newResources);
     }
-    setAttributes(newAttrs);
     addEvent(event);
     dispatch({ type: 'SET_CURRENT_AGE', payload: newAge });
-    const deathResult = checkDeath(newAge, newAttrs, state.talents);
+    const deathResult = checkDeath(newAge, state.attributes, state.talents);
     if (deathResult.isDead) {
       setDeath(newAge, deathResult.reason);
     }
-  }, [state.attributes, state.resources, state.talents, addEvent, setAttributes, setDeath, updateResources]);
+  }, [state.attributes, state.resources, state.talents, addEvent, setDeath, updateResources]);
 
   const handleDecision = useCallback((optionId: string, optionText: string, customInput?: string) => {
     dispatch({ type: 'SET_PENDING_DECISION', payload: null });
@@ -199,7 +191,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsProcessing(false);
     }
-  }, [state.currentAge, state.attributes, state.talents, state.events, state.world, state.identity, state.resources, addEvent, setAttributes, setDeath, updateResources, isProcessing, applyEventChanges]);
+  }, [state.currentAge, state.attributes, state.talents, state.events, state.world, state.identity, state.resources, addEvent, setDeath, updateResources, isProcessing, applyEventChanges]);
 
   return (
     <GameContext.Provider value={{

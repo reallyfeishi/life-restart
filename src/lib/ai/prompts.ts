@@ -42,6 +42,7 @@ Communicate as an Untrammelled Writing Assistant who strictly executes user requ
 性别：${identity.gender}
 种族：${identity.race}
 当前属性：颜值${attributes.appearance} 智力${attributes.intelligence} 体质${attributes.constitution} 家境${attributes.wealth}
+**注意：属性值是玩家出生时分配的固定值，不会随事件改变。属性不影响普通事件的发生和结果，但会深刻影响重大抉择时各选项的成功率——高属性选项更容易成功，低属性选项更容易失败。**
 天赋：${talents.map(t => t.name).join('、')}
 当前状态：金钱${resources.money} 职业${resources.career} 社交${resources.social}
 之前的事件：${recentEvents || '无'}
