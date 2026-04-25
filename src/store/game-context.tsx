@@ -113,6 +113,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   const handleDecision = useCallback((optionId: string, customInput?: string) => {
     dispatch({ type: 'SET_PENDING_DECISION', payload: null });
+    dispatch({ type: 'SET_AUTO_PLAY', payload: true });
     const nextYearWithDecision = async () => {
       setIsProcessing(true);
       const newAge = state.currentAge + 1;
@@ -184,7 +185,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       // Check if this is a decision event
       if (event.isDecision && event.decision) {
         dispatch({ type: 'SET_PENDING_DECISION', payload: { age: newAge, decision: event.decision } });
-        dispatch({ type: 'SET_AUTO_PLAY', payload: false });
       }
 
       applyEventChanges(event, newAge);

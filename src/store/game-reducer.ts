@@ -35,7 +35,7 @@ export const initialState: GameState = {
   deathAge: 0,
   deathReason: '',
   backstory: '',
-  isAutoPlaying: false,
+  isAutoPlaying: true,
   autoPlaySpeed: 1000,
   unlockedAchievements: [],
   sessionId: null,
@@ -105,7 +105,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, disableThinking: !state.disableThinking };
 
     case 'SET_PENDING_DECISION':
-      return { ...state, pendingDecision: action.payload };
+      return { ...state, pendingDecision: action.payload, isAutoPlaying: action.payload === null ? state.isAutoPlaying : false };
 
     case 'RESET_GAME':
       return { ...initialState, unlockedAchievements: state.unlockedAchievements };
