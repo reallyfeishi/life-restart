@@ -3,7 +3,7 @@
 import { useGame } from '@/store/game-context';
 import { useState, useCallback } from 'react';
 import { Talent } from '@/types/talent';
-import { TALENTS } from '@/data/talents';
+import { API_BASE_URL } from '@/lib/config';
 
 const RARITY_COLORS: Record<string, string> = {
   common: '#4a6fa5',
@@ -19,22 +19,54 @@ const RARITY_LABELS: Record<string, string> = {
   legendary: '传说',
 };
 
+const FALLBACK_TALENTS: Talent[] = [
+  { id: 'fb_1', name: '命运之子', description: '全属性+1，天生好命', rarity: 'legendary', effects: [], worlds: [] },
+  { id: 'fb_2', name: '过目不忘', description: '学习能力超群', rarity: 'rare', effects: [], worlds: [] },
+  { id: 'fb_3', name: '幸运星', description: '随机正面事件触发率增加', rarity: 'common', effects: [], worlds: [] },
+];
+
 export function TalentDraw() {
   const { state, dispatch, drawTalents } = useGame();
   const [revealed, setRevealed] = useState(false);
   const [drawnTalents, setDrawnTalents] = useState<Talent[]>([]);
   const [redrawCount, setRedrawCount] = useState(3);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const drawRandomTalents = useCallback(() => {
-    const shuffled = [...TALENTS].sort(() => Math.random() - 0.5);
-    const picked = shuffled.slice(0, 3);
-    return picked;
-  }, []);
+  const drawTalentsFromAPI = useCallback(async (): Promise<Talent[]> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/game/talents`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          world: state.world,
+          gender: state.identity?.gender,
+          race: state.identity?.race,
+          model: state.selectedModel,
+          disableThinking: state.disableThinking,
+        }),
+      });
+      if (!response.ok) throw new Error('API error');
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      return (data.talents || []).map((t: { name: string; description: string; rarity: string; id?: string }, i: number) => ({
+        id: t.id || `ai_talent_${i}`,
+        name: t.name,
+        description: t.description,
+        rarity: t.rarity || 'common',
+        effects: [],
+        worlds: [],
+      }));
+    } catch {
+      return FALLBACK_TALENTS;
+    }
+  }, [state.world, state.identity, state.selectedModel, state.disableThinking]);
 
-  const handleReveal = () => {
-    const talents = drawRandomTalents();
+  const handleReveal = async () => {
+    setIsLoading(true);
+    const talents = await drawTalentsFromAPI();
     setDrawnTalents(talents);
     setRevealed(true);
+    setIsLoading(false);
     setTimeout(() => {
       const cardEls = document.querySelectorAll('.talent-card');
       cardEls.forEach((el, i) => {
@@ -43,16 +75,18 @@ export function TalentDraw() {
     }, 200);
   };
 
-  const handleRedraw = () => {
+  const handleRedraw = async () => {
     if (redrawCount <= 0) return;
+    setIsLoading(true);
     setRevealed(false);
     const cardEls = document.querySelectorAll('.talent-card');
     cardEls.forEach((el) => el.classList.remove('flipped'));
-    setTimeout(() => {
-      const talents = drawRandomTalents();
+    setTimeout(async () => {
+      const talents = await drawTalentsFromAPI();
       setDrawnTalents(talents);
       setRevealed(true);
       setRedrawCount(prev => prev - 1);
+      setIsLoading(false);
       setTimeout(() => {
         const cardEls = document.querySelectorAll('.talent-card');
         cardEls.forEach((el, i) => {
@@ -76,10 +110,11 @@ export function TalentDraw() {
           <p className="text-text-aux text-sm">命运将为你揭示三张天赋牌</p>
         </div>
         <button
-          className="mt-8 min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#4a6fa5] btn-press py-4"
+          className={`mt-8 min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#4a6fa5] btn-press py-4 ${isLoading ? 'opacity-50' : ''}`}
           onClick={handleReveal}
+          disabled={isLoading}
         >
-          揭示命运
+          {isLoading ? '命运揭示中...' : '揭示命运'}
         </button>
       </div>
     );
@@ -121,10 +156,11 @@ export function TalentDraw() {
       <div className="w-full mt-4 space-y-2">
         {redrawCount > 0 && (
           <button
-            className="w-full min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#4a6fa5] border border-[#4a6fa5] bg-transparent btn-press"
+            className={`w-full min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#4a6fa5] border border-[#4a6fa5] bg-transparent btn-press ${isLoading ? 'opacity-50' : ''}`}
             onClick={handleRedraw}
+            disabled={isLoading}
           >
-            重新抽取（剩余{redrawCount}次）
+            {isLoading ? '重抽中...' : `重新抽取（剩余${redrawCount}次）`}
           </button>
         )}
         <button

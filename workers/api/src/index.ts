@@ -27,6 +27,9 @@ export default {
     if (url.pathname === '/api/game/session') {
       return Response.json({ sessionId: crypto.randomUUID() }, { headers });
     }
+    if (url.pathname === '/api/game/talents') {
+      return handleTalents(body, env, headers);
+    }
 
     return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers });
   },
@@ -250,6 +253,63 @@ ${decisionContext}
 
 attrChanges只写变化的值（正负均可），不变的不写。
 resources中career为空字符串表示不变，money和social写变化量。
+
+只返回JSON，不要其他内容。`;
+}
+
+async function handleTalents(body: any, env: Env, headers: Record<string, string>): Promise<Response> {
+  const { world, gender, race, model, disableThinking } = body;
+  const apiKey = env.AI_API_KEY || '';
+
+  if (!apiKey) {
+    const fallback = [
+      { id: 'fallback_1', name: '命运之子', description: '全属性+1，天生好命', rarity: 'legendary' },
+      { id: 'fallback_2', name: '过目不忘', description: '学习能力超群', rarity: 'rare' },
+      { id: 'fallback_3', name: '幸运星', description: '随机正面事件触发率增加', rarity: 'common' },
+    ];
+    return new Response(JSON.stringify({ talents: fallback }), { headers });
+  }
+
+  const prompt = buildTalentPrompt(world, gender, race);
+  const config = getAIConfig(model, env);
+
+  try {
+    const responseText = await chatCompletion(config, prompt, 600, disableThinking);
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[0]);
+      const talents = (parsed.talents || []).map((t: any, i: number) => ({
+        id: `ai_talent_${Date.now()}_${i}`,
+        name: t.name || '未知天赋',
+        description: t.description || '',
+        rarity: (['legendary', 'epic', 'rare', 'common'].includes(t.rarity) ? t.rarity : 'common') as string,
+      }));
+      if (talents.length === 0) throw new Error('AI returned empty talents');
+      return new Response(JSON.stringify({ talents }), { headers });
+    }
+    throw new Error('No JSON found in response');
+  } catch (e: any) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+  }
+}
+
+function buildTalentPrompt(world: { name: string; description: string }, gender: string, race: string) {
+  return `你是一个创意写作助手。请为一个"人生重开"游戏生成天赋卡牌。
+
+世界设定：${world.name} - ${world.description}
+性别：${gender}
+种族：${race}
+
+要求：
+1. 生成8个天赋，每个天赋包含 name（中文名，2-5字）、description（一句话描述效果，10-20字）、rarity（稀有度：common/rare/epic/legendary 之一）
+2. 天赋要与世界设定、种族、性别密切相关——如果是奇幻世界就写魔法/修炼类天赋，如果是赛博朋克就写义体/黑客类天赋
+3. 稀有度分布：至少2个common，2个rare，1-2个epic，0-1个legendary
+4. 天赋名称要有创意、有意境，不要千篇一律
+5. 天赋描述要具体，说明它如何影响人生走向
+6. 如果种族是非人类（如龙、兽人等），天赋要体现种族特色
+
+只返回JSON，格式如下：
+{"talents":[{"name":"天赋名","description":"描述","rarity":"common"}]}
 
 只返回JSON，不要其他内容。`;
 }
