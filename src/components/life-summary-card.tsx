@@ -2,13 +2,15 @@
 
 import { useGame } from '@/store/game-context';
 
+import type { GameState } from '@/types/game';
+
 interface LifeSummaryCardProps {
   onConfirm: () => void;
 }
 
 export function LifeSummaryCard({ onConfirm }: LifeSummaryCardProps) {
   const { state } = useGame();
-  const score = calculateScore();
+  const score = calculateScore(state);
   const grade = score >= 90 ? 'S' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D';
   const gradeColor = grade === 'S' ? '#e8602a' : grade === 'A' ? '#c4883a' : grade === 'B' ? '#4a6fa5' : '#8a857b';
 
@@ -68,7 +70,12 @@ export function LifeSummaryCard({ onConfirm }: LifeSummaryCardProps) {
   );
 }
 
-function calculateScore(): number {
-  // TODO: Implement proper scoring based on actual game state
-  return Math.floor(Math.random() * 40) + 50;
+function calculateScore(state: GameState): number {
+  const { attributes, events, resources, deathAge } = state;
+  const attrTotal = attributes.appearance + attributes.intelligence + attributes.constitution + attributes.wealth;
+  const attrScore = Math.min(100, (attrTotal / 80) * 60);
+  const eventScore = Math.min(30, events.length * 1.5);
+  const longevityBonus = deathAge > 80 ? Math.min(10, (deathAge - 80) * 0.5) : 0;
+  const totalScore = Math.floor(Math.min(100, attrScore + eventScore + longevityBonus));
+  return totalScore;
 }

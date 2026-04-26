@@ -122,16 +122,16 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         for (const [key, value] of Object.entries(event.attrChanges)) {
           const mappedKey = attrKeyMap[key];
           if (mappedKey) {
-            newAttrs[mappedKey] = Math.max(0, Math.min(10, newAttrs[mappedKey] + (value as number)));
+            newAttrs[mappedKey] = Math.max(0, Math.min(20, newAttrs[mappedKey] + (value as number)));
           }
         }
       }
       // Apply resource changes
       const newResources = { ...state.resources };
       if (event.resources) {
-        if (event.resources.money !== undefined) newResources.money = (state.resources.money || 0) + (event.resources.money as number);
+        if (event.resources.money !== undefined) newResources.money = Math.max(-1000, Math.min(10000000, (state.resources.money || 0) + (event.resources.money as number)));
         if (event.resources.career) newResources.career = event.resources.career;
-        if (event.resources.social !== undefined) newResources.social = (state.resources.social || 0) + (event.resources.social as number);
+        if (event.resources.social !== undefined) newResources.social = Math.max(0, Math.min(200, (state.resources.social || 0) + (event.resources.social as number)));
       }
 
       // Check death
@@ -141,12 +141,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       let deathReason = '';
       if (age >= 60) {
         let deathChance = 0;
-        if (age > 60) deathChance += (age - 60) * 0.5;
-        if (age > 80) deathChance += (age - 80) * 1.5;
-        if (age > 100) deathChance += (age - 100) * 3;
+        if (age > 50) deathChance += (age - 50) * 1.0;
+        if (age > 70) deathChance += (age - 70) * 2.0;
+        if (age > 90) deathChance += (age - 90) * 4.0;
         if (hasImmortalBody) deathChance *= 0.3;
         if (hasDeathResist) deathChance *= 0.7;
-        deathChance -= newAttrs.constitution * 0.3;
+        deathChance -= newAttrs.constitution * 0.5;
         deathChance = Math.max(0, deathChance);
         const roll = Math.random() * 100;
         if (roll < deathChance) {
