@@ -345,9 +345,9 @@ function buildTalentPrompt(world: { name: string; description: string }, gender:
 - 现代世界：可写学习天赋、社交直觉、运动天赋、艺术感知等
 
 要求：
-1. 生成8个天赋，每个天赋包含 name（中文名，2-5字）、description（一句话描述效果，10-20字）、rarity（稀有度：common/rare/epic/legendary 之一）
+1. 生成3个天赋，每个天赋包含 name（中文名，2-5字）、description（一句话描述效果，10-20字）、rarity（稀有度：common/rare/epic/legendary 之一）
 2. 天赋必须与世界设定、种族强相关——修仙世界写灵根修炼，赛博世界写义体骇客，绝不混杂
-3. 稀有度分布：至少2个common，2个rare，1-2个epic，0-1个legendary
+3. 稀有度分布：1-2个common/rare，0-1个epic/legendary，保证多样性
 4. 天赋名称要有创意、有意境，不要千篇一律
 5. 天赋描述要具体，说明它如何影响人生走向
 6. 如果种族是非人类（如龙、兽人、精灵等），天赋要体现种族特色
