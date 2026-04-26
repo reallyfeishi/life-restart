@@ -1,18 +1,17 @@
 'use client';
 
 import { Decision, DecisionOption } from '@/types/event';
+import { useState } from 'react';
 
 interface DecisionCardProps {
   decision: Decision;
   age: number;
-  selectedOption: string | null;
-  onSelect: (optionId: string | null) => void;
-  onConfirm: () => void;
-  customInput: string;
-  onCustomInput: (value: string) => void;
+  onConfirm: (optionId: string, optionText: string, customInput: string) => void;
 }
 
-export function DecisionCard({ decision, age, selectedOption, onSelect, onConfirm, customInput, onCustomInput }: DecisionCardProps) {
+export function DecisionCard({ decision, age, onConfirm }: DecisionCardProps) {
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [customInput, setCustomInput] = useState('');
   const hasCustomInput = customInput.trim().length > 0;
   const canConfirm = selectedOption !== null || hasCustomInput;
 
@@ -44,10 +43,10 @@ export function DecisionCard({ decision, age, selectedOption, onSelect, onConfir
           >
             <input
               type="radio"
-              name="decision-option"
+              name={`decision-option-${age}`}
               value={option.id}
               checked={selectedOption === option.id}
-              onChange={() => onSelect(option.id)}
+              onChange={() => setSelectedOption(option.id)}
               className="mt-0.5 flex-shrink-0 accent-[#4a6fa5]"
             />
             <div className="flex-1 min-w-0">
@@ -71,12 +70,13 @@ export function DecisionCard({ decision, age, selectedOption, onSelect, onConfir
               placeholder="或者你想..."
               value={customInput}
               onChange={(e) => {
-                onSelect(null);
-                onCustomInput(e.target.value);
+                setSelectedOption(null);
+                setCustomInput(e.target.value);
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && canConfirm) {
-                  onConfirm();
+                  const text = customInput;
+                  onConfirm('custom', '', text);
                 }
               }}
               className="w-full bg-transparent text-sm text-text-title placeholder-text-aux/50 outline-none"
@@ -93,7 +93,14 @@ export function DecisionCard({ decision, age, selectedOption, onSelect, onConfir
             : 'bg-border/40 text-text-aux/50 cursor-not-allowed'
         }`}
         disabled={!canConfirm}
-        onClick={onConfirm}
+        onClick={() => {
+          if (selectedOption !== null) {
+            const text = decision.options.find(o => o.id === selectedOption)?.text ?? '';
+            onConfirm(selectedOption, text, '');
+          } else if (hasCustomInput) {
+            onConfirm('custom', customInput, customInput);
+          }
+        }}
       >
         确认选择
       </button>

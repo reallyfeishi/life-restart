@@ -3,7 +3,7 @@
 import { useGame } from '@/store/game-context';
 import { Talent } from '@/types/talent';
 import { GameEvent } from '@/types/event';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { DecisionCard } from '@/components/decision-card';
 import { LifeSummaryCard } from '@/components/life-summary-card';
 
@@ -16,14 +16,6 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
   const { state, nextYear, setAutoPlay, handleDecision } = useGame();
   const timelineRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [customInput, setCustomInput] = useState('');
-
-  // Reset decision state when a new pending decision appears
-  useEffect(() => {
-    setSelectedOption(null);
-    setCustomInput('');
-  }, [state.pendingDecision]);
 
   // Auto-play
   useEffect(() => {
@@ -174,16 +166,9 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
               key={state.pendingDecision.age}
               decision={state.pendingDecision.decision}
               age={state.pendingDecision.age}
-              selectedOption={selectedOption}
-              onSelect={setSelectedOption}
-              onConfirm={() => {
-                const selectedText = selectedOption
-                  ? state.pendingDecision?.decision.options.find(o => o.id === selectedOption)?.text ?? ''
-                  : customInput;
-                handleDecision(selectedOption ?? '', selectedText, customInput);
+              onConfirm={(optionId, optionText, customInput) => {
+                handleDecision(optionId, optionText, customInput);
               }}
-              customInput={customInput}
-              onCustomInput={setCustomInput}
             />
           </div>
         )}
