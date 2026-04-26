@@ -21,7 +21,7 @@ const RACES = [
 // Parse character names from tingyuan world description
 function parseTingyuanCharacters(description: string): string[] {
   // Extract text after "有以下成员：" until the period
-  const match = description.match(/有以下成员[：:](.+?)\./);
+  const match = description.match(/有以下成员[：:](.+?)[。\.]/);
   if (!match) return [];
   const membersStr = match[1];
   // Split by comma/Chinese comma and clean up
