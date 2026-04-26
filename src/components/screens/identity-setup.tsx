@@ -49,6 +49,8 @@ function detectPlayingAs(extraInfo: string, characters: string[]): string | null
 export function IdentitySetup() {
   const { state, dispatch, setIdentity } = useGame();
   const [extraInfo, setExtraInfo] = useState(state.identity?.extraInfo || '');
+  const [raceCustom, setRaceCustom] = useState(state.identity?.raceCustom || '');
+  const [genderCustom, setGenderCustom] = useState(state.identity?.genderCustom || '');
   const [tingyuanCharacters, setTingyuanCharacters] = useState<string[]>([]);
   const [tingyuanShowAll, setTingyuanShowAll] = useState(false);
   const [detectedCharacter, setDetectedCharacter] = useState<string | null>(null);
@@ -79,11 +81,12 @@ export function IdentitySetup() {
 
   const gender = state.identity?.gender;
   const race = state.identity?.race;
+  const isCustomRace = race === 'custom';
 
-  const canProceed = !!gender && !!race;
+  const canProceed = !!gender && (!!race && (!isCustomRace || raceCustom.trim()));
 
   const handleNext = () => {
-    setIdentity({ gender, race, genderCustom: undefined, raceCustom: undefined, extraInfo, playingAs: detectedCharacter || undefined });
+    setIdentity({ gender, race, genderCustom: gender === 'custom' ? genderCustom : undefined, raceCustom: isCustomRace ? raceCustom : undefined, extraInfo, playingAs: detectedCharacter || undefined });
     dispatch({ type: 'SET_PHASE', payload: 'talent-draw' });
   };
 
@@ -134,6 +137,15 @@ export function IdentitySetup() {
               </button>
             ))}
           </div>
+          {isCustomRace && (
+            <input
+              className="w-full mt-3 border border-border rounded-btn p-3 text-sm text-text-body bg-bg-card focus:outline-none focus:ring-1 focus:ring-[#4a6fa5]/30 transition-all"
+              placeholder="请输入自定义种族名称..."
+              value={raceCustom}
+              onChange={(e) => setRaceCustom(e.target.value)}
+              maxLength={20}
+            />
+          )}
         </div>
 
         <div>
