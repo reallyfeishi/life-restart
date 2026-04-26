@@ -154,11 +154,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         }
       }
 
-      // Check if AI event describes death
-      const deathKeywords = ['去世', '死亡', '离世', '死去', '死了', '殒命', '牺牲', '长眠', '消散', '陨落', '化为尘土', '化为灰烬'];
-      const aiDescribesDeath = deathKeywords.some(kw => event.content.includes(kw));
+      // Check if AI event describes player death (must involve "你")
+      const youDeathPatterns = ['你安详', '你安详地', '你去世', '你死去', '你死了', '你殒命', '你长眠', '你消散', '你的生命走到尽头', '你闭上了眼睛', '你的心跳停止'];
+      const aiDescribesPlayerDeath = youDeathPatterns.some(pw => event.content.includes(pw));
 
-      if (aiDescribesDeath && age >= 30) {
+      if (aiDescribesPlayerDeath && age >= 30) {
         // AI explicitly described death - use the event content as death reason
         return {
           ...state,

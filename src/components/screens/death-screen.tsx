@@ -2,10 +2,12 @@
 
 import { useGame } from '@/store/game-context';
 
+import { GameState } from '@/types/game';
+
 export function DeathScreen() {
   const { state, resetGame } = useGame();
 
-  const score = calculateScore();
+  const score = calculateScore(state);
   const grade = score >= 90 ? 'S' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D';
   const gradeColor = grade === 'S' ? '#e8602a' : grade === 'A' ? '#c4883a' : grade === 'B' ? '#4a6fa5' : '#8a857b';
 
@@ -74,8 +76,15 @@ export function DeathScreen() {
   );
 }
 
-function calculateScore(): number {
-  return Math.floor(Math.random() * 40) + 50;
+function calculateScore(state: GameState): number {
+  const { attributes, events, deathAge } = state;
+  const attrTotal = (attributes.appearance || 0) + (attributes.intelligence || 0) +
+                    (attributes.constitution || 0) + (attributes.wealth || 0);
+  const attrScore = Math.min(100, (attrTotal / 80) * 60);
+  const eventScore = Math.min(30, events.length * 1.5);
+  const longevityBonus = (deathAge || 0) > 80 ? Math.min(10, ((deathAge || 0) - 80) * 0.5) : 0;
+  const totalScore = Math.floor(Math.min(100, attrScore + eventScore + longevityBonus));
+  return isNaN(totalScore) ? 50 : totalScore;
 }
 
 function getAchievementName(id: string): string {

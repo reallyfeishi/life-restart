@@ -71,11 +71,12 @@ export function LifeSummaryCard({ onConfirm }: LifeSummaryCardProps) {
 }
 
 function calculateScore(state: GameState): number {
-  const { attributes, events, resources, deathAge } = state;
-  const attrTotal = attributes.appearance + attributes.intelligence + attributes.constitution + attributes.wealth;
+  const { attributes, events, deathAge } = state;
+  const attrTotal = (attributes.appearance || 0) + (attributes.intelligence || 0) +
+                    (attributes.constitution || 0) + (attributes.wealth || 0);
   const attrScore = Math.min(100, (attrTotal / 80) * 60);
   const eventScore = Math.min(30, events.length * 1.5);
-  const longevityBonus = deathAge > 80 ? Math.min(10, (deathAge - 80) * 0.5) : 0;
+  const longevityBonus = (deathAge || 0) > 80 ? Math.min(10, ((deathAge || 0) - 80) * 0.5) : 0;
   const totalScore = Math.floor(Math.min(100, attrScore + eventScore + longevityBonus));
-  return totalScore;
+  return isNaN(totalScore) ? 50 : totalScore;
 }
