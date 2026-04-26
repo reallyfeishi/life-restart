@@ -13,7 +13,6 @@ export function LifeSummaryCard({ onConfirm }: LifeSummaryCardProps) {
   const gradeColor = grade === 'S' ? '#e8602a' : grade === 'A' ? '#c4883a' : grade === 'B' ? '#4a6fa5' : '#8a857b';
 
   const genderIcon = state.identity?.gender === 'male' ? '👦' : '👧';
-  const raceIcon = '👤';
   const raceLabel = state.identity?.race === 'human' ? '人类' :
     state.identity?.race === 'elf' ? '精灵' :
     state.identity?.race === 'vampire' ? '吸血鬼' :

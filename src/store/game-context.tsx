@@ -178,7 +178,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsProcessing(false);
     }
-  }, [state.currentAge, state.attributes, state.talents, state.events, state.world, state.identity, state.resources, addEvent, setDeath, updateResources, isProcessing, applyEventChanges]);
+  }, [state.currentAge, state.attributes, state.disableThinking, state.selectedModel, state.talents, state.events, state.world, state.identity, state.resources, addEvent, setDeath, updateResources, isProcessing, applyEventChanges]);
 
   return (
     <GameContext.Provider value={{

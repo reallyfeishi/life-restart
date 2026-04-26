@@ -1,7 +1,6 @@
 'use client';
 
 import { useGame } from '@/store/game-context';
-import { useState } from 'react';
 
 export function DeathScreen() {
   const { state, resetGame } = useGame();

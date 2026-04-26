@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { API_BASE_URL } from '@/lib/config';
 
 export function FatePreview() {
-  const { state, dispatch, setBackstory, resetGame } = useGame();
+  const { state, dispatch, setBackstory } = useGame();
   const [loading, setLoading] = useState(true);
   const [displayedBackstory, setDisplayedBackstory] = useState('');
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -37,6 +37,7 @@ export function FatePreview() {
       setLoading(false);
     }
     fetchBackstory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

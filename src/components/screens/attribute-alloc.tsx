@@ -41,7 +41,7 @@ export function AttributeAlloc() {
       if (newUsed > totalPoints) return prev;
       return { ...prev, [key]: newVal };
     });
-  }, []);
+  }, [totalPoints]);
 
   const handleRandom = () => {
     let points = totalPoints;

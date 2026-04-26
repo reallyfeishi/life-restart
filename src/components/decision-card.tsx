@@ -1,6 +1,6 @@
 'use client';
 
-import { Decision, DecisionOption } from '@/types/event';
+import { Decision } from '@/types/event';
 import { useState } from 'react';
 
 interface DecisionCardProps {

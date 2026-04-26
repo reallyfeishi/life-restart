@@ -48,8 +48,6 @@ function detectPlayingAs(extraInfo: string, characters: string[]): string | null
 
 export function IdentitySetup() {
   const { state, dispatch, setIdentity } = useGame();
-  const [genderCustom, setGenderCustom] = useState('');
-  const [raceCustom, setRaceCustom] = useState('');
   const [extraInfo, setExtraInfo] = useState(state.identity?.extraInfo || '');
   const [tingyuanCharacters, setTingyuanCharacters] = useState<string[]>([]);
   const [detectedCharacter, setDetectedCharacter] = useState<string | null>(null);
@@ -71,6 +69,7 @@ export function IdentitySetup() {
   useEffect(() => {
     if (tingyuanCharacters.length > 0 && extraInfo.trim()) {
       const detected = detectPlayingAs(extraInfo, tingyuanCharacters);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDetectedCharacter(detected);
     } else {
       setDetectedCharacter(null);
@@ -83,7 +82,7 @@ export function IdentitySetup() {
   const canProceed = !!gender && !!race;
 
   const handleNext = () => {
-    setIdentity({ gender, race, genderCustom, raceCustom, extraInfo, playingAs: detectedCharacter || undefined });
+    setIdentity({ gender, race, genderCustom: undefined, raceCustom: undefined, extraInfo, playingAs: detectedCharacter || undefined });
     dispatch({ type: 'SET_PHASE', payload: 'talent-draw' });
   };
 
