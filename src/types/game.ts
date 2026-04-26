@@ -6,6 +6,7 @@ import { GameEvent, Decision } from './event';
 
 export type GamePhase =
   | 'world-select'
+  | 'custom-world'
   | 'identity-setup'
   | 'talent-draw'
   | 'attribute-alloc'

@@ -18,16 +18,23 @@ export function WorldSelect() {
       <div className="grid grid-cols-2 gap-3 w-full flex-1">
         {WORLDS.map((world) => {
           const isSelected = selectedWorld?.id === world.id;
+          const isCustom = world.id === 'custom';
           return (
             <button
               key={world.id}
-              onClick={() => selectWorld(world)}
+              onClick={() => {
+                if (isCustom) {
+                  dispatch({ type: 'SET_PHASE', payload: 'custom-world' });
+                } else {
+                  selectWorld(world);
+                }
+              }}
               className={`w-full text-left border rounded-card p-4 shadow-card transition-all duration-fast relative overflow-hidden cursor-pointer ${
                 isSelected ? 'border-[#4a6fa5] bg-bg-card shadow-card-hover ring-1 ring-[#4a6fa5]/20' : 'border-border bg-bg-card hover:shadow-card-hover'
               }`}
               tabIndex={0}
             >
-              {isSelected && (
+              {isSelected && !isCustom && (
                 <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4a6fa5]" />
               )}
               <div className="text-2xl mb-2">{world.icon}</div>
