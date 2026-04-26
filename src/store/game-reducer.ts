@@ -145,16 +145,35 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         }
       }
 
-      // Check death
+      // Check if AI event describes death
+      const deathKeywords = ['去世', '死亡', '离世', '死去', '死了', '殒命', '牺牲', '长眠', '消散', '陨落', '化为尘土', '化为灰烬'];
+      const aiDescribesDeath = deathKeywords.some(kw => event.content.includes(kw));
+
+      if (aiDescribesDeath && age >= 30) {
+        // AI explicitly described death - use the event content as death reason
+        return {
+          ...state,
+          attributes: newAttrs,
+          resources: newResources,
+          events: [...state.events, event],
+          currentAge: age,
+          deathAge: age,
+          deathReason: event.content,
+          phase: 'life-summary',
+          isAutoPlaying: false,
+          pendingDecision: null,
+        };
+      }
+
+      // Code-level death check (very conservative fallback)
       const hasImmortalBody = state.talents.some(t => t.id === 'immortal_body');
       const hasDeathResist = state.talents.some(t => t.effects?.some(e => e.type === 'death_resist'));
       let isDead = false;
       let deathReason = '';
-      if (age >= 60) {
+      if (age >= 100) {
         let deathChance = 0;
-        if (age > 50) deathChance += (age - 50) * 1.0;
-        if (age > 70) deathChance += (age - 70) * 2.0;
-        if (age > 90) deathChance += (age - 90) * 4.0;
+        if (age > 90) deathChance += (age - 90) * 1.5;
+        if (age > 120) deathChance += (age - 120) * 3.0;
         if (hasImmortalBody) deathChance *= 0.3;
         if (hasDeathResist) deathChance *= 0.7;
         deathChance -= newAttrs.constitution * 0.5;
@@ -162,7 +181,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         const roll = Math.random() * 100;
         if (roll < deathChance) {
           isDead = true;
-          const reasons = age > 100
+          const reasons = age > 150
             ? ['安详离世', '寿终正寝', '超越凡人的极限']
             : ['安详离世', '寿终正寝', '因病去世'];
           deathReason = reasons[Math.floor(Math.random() * reasons.length)];

@@ -161,24 +161,42 @@ async function handleGenerate(body: any, env: Env, headers: Record<string, strin
   }
 }
 
+const TINGYUAN_CHARACTERS = '花小猪, Asterainana(小男娘), 安叶, 小奶爱好者苏顺蓝, 河百大板面, 柏林以西, 洱月, 怜(可怜npc), 泪目(欺负对象), 抹茶干层蛋糕(小男娘), 耀斑, 香蕉你个巴拉, kk, InkLeaF, 狐雨, kitasan, 莉莉丝(老师), 冽影, 蟠桃, 怜「片翼の白鷺」, 自定义僵尸, [被窝里进蛇了, 我说蛇在里面], 两脚猫(老师), 子涵, 阔乐, Fomalhaut, 蚯蚓, 佳非猫, Alsetsune, Plus, 飞矢(是一条鱼), 汐洛';
+
+function buildTingyuanEventRules(playingAs?: string): string {
+  const base = `**【庭院世界观·角色名单——极其重要】以下是庭院中所有成员（括号内为特殊身份）：\n${TINGYUAN_CHARACTERS}\n\n**【庭院互动规则——极其重要】**\n1. 所有事件必须发生在庭院世界观内，涉及上述成员之间的互动\n2. 事件必须有至少2个角色参与（玩家角色+至少1个其他成员），绝不能写单人独角戏\n3. 带有括号身份的角色（如莉莉丝是老师、飞矢是一条鱼、泪目是欺负对象、怜是可怜npc），事件中要自然体现其身份特点\n4. 背景锁定为中世纪魔法世界观，事件风格应符合奇幻魔法氛围\n5. 成员之间要有丰富的互动关系：师徒、朋友、对手、欺负与被欺负、暧昧、恶作剧等\n6. 事件中的角色互动要符合各自的性格和身份，不要OOC（out of character）`;
+  if (playingAs) {
+    return base + `\n7. 玩家扮演的角色是"${playingAs}"，事件必须以"${playingAs}"为第一视角展开`;
+  }
+  return base;
+}
 function buildBackgroundPrompt(
-  world: { name: string; description: string },
+  world: { id: string; name: string; description: string },
   identity: { gender: string; race: string; extraInfo: string; playingAs?: string },
   talents: { name: string }[],
   attributes: { appearance: number; intelligence: number; constitution: number; wealth: number }
 ) {
+  const isTingyuan = world.id === 'special_tingyuan';
+  const tingyuanBlock = isTingyuan ? `\n\n${buildTingyuanBackgroundBlock(identity.playingAs)}` : '';
   const playingAsText = identity.playingAs
     ? `**你扮演的角色：${identity.playingAs}**。你就是这个角色，所有事件以你的视角展开，用"你"来叙述。`
     : '';
+  const raceAwareBg = `
+
+**【种族感知——极其重要】当前种族为"${identity.race}"。请根据种族特性描写其生活环境与成长节奏：
+- 长寿种族（吸血鬼、精灵、龙裔等）的居所和生活方式应与人类截然不同
+- 环境描写要体现种族特色（精灵的古树花海、吸血鬼的古堡夜色、龙裔的山脉遗迹等）
+- 成长节奏要符合种族的生命历程，不要用人类的"上学-工作-结婚"模式套用所有种族
+`;
   return `你是一个创意写作助手。请为一个"人生重开"游戏生成一段背景故事。
 
-世界设定：${world.name} - ${world.description}
+世界设定：${world.name} - ${world.description}${tingyuanBlock}
 性别：${identity.gender}
 种族：${identity.race}
 天赋：${talents.map((t: { name: string }) => t.name).join('、')}
 初始属性：颜值${attributes.appearance} 智力${attributes.intelligence} 体质${attributes.constitution} 家境${attributes.wealth}
 补充信息：${identity.extraInfo || '无'}
-${playingAsText}
+${playingAsText}${raceAwareBg}
 
 【文风要求】
 采用"宏大的温暖"叙事风格——参考轻小说作家"青空乐章"的文风：
@@ -195,12 +213,20 @@ ${playingAsText}
 - 不要写太长，短小精炼即可`;
 }
 
+function buildTingyuanBackgroundBlock(playingAs?: string): string {
+  const base = `\n\n**【庭院世界观·角色名单——极其重要】以下是庭院中所有成员（括号内为特殊身份）：\n${TINGYUAN_CHARACTERS}\n\n**【庭院背景规则——极其重要】**\n1. 背景故事必须发生在庭院世界观内，体现上述成员之间的关系\n2. 带有括号身份的角色（如莉莉丝是老师、飞矢是一条鱼），要自然体现其身份特点\n3. 背景锁定为中世纪魔法世界观，文风应符合奇幻魔法氛围`;
+  if (playingAs) {
+    return base + `\n4. 玩家扮演的角色是"${playingAs}"，背景故事必须以"${playingAs}"的视角展开`;
+  }
+  return base;
+}
+
 function buildEventPrompt(
   age: number,
   attributes: { appearance: number; intelligence: number; constitution: number; wealth: number },
   talents: { name: string }[],
   events: { age: number; content: string }[],
-  world: { name: string },
+  world: { id: string; name: string },
   identity: { gender: string; race: string; playingAs?: string },
   resources: { money: number; career: string; social: number },
   previousDecision?: { optionId: string; optionText: string; customInput: string }
@@ -212,15 +238,27 @@ function buildEventPrompt(
   const playingAsText = identity.playingAs
     ? `**你扮演的角色：${identity.playingAs}**。事件必须围绕这个角色展开，以"你"的视角叙述，你就是${identity.playingAs}。**`
     : '';
+  const tingyuanBlock = world.id === 'special_tingyuan' ? `\n\n${buildTingyuanEventRules(identity.playingAs)}` : '';
+
+  const raceAwarenessBlock = `
+
+**【种族感知——极其重要】当前种族为"${identity.race}"。你必须根据这个种族的本质特征来生成事件，每个种族都是独特的：
+1. **寿命与成长节奏**：根据种族判断寿命范围（吸血鬼数百年、精灵上千年、人类约80年、仿生人理论上不朽等），并据此描写成长节奏。长寿种族的"十年"可能只是短暂瞬间，人类的一个月对精灵来说只是眨眼。
+2. **成长阶段**：不同种族的成长阶段不同。精灵可能100岁才成年，吸血鬼可能转变后就不再衰老。用种族特有的成长描述，不要套用人类的"上学-工作-结婚"模式。
+3. **生活环境**：根据种族描写适宜的环境。精灵的居所应有古树、花海、月光、溪流等生命气息；吸血鬼可能生活在古堡、夜色、城堡深处；龙裔可能居住在火山、山脉、遗迹；仿生人可能在都市、实验室、科技设施。**环境描写要体现种族特色，绝不能千篇一律**。
+4. **种族能力与弱点**：吸血鬼怕阳光银器但拥有超自然力量，精灵擅长自然魔法但可能不擅铁器，龙裔有龙族血脉但可能傲慢，仿生人不怕疾病但可能依赖能源。事件中可以自然体现这些特性。
+5. **社交与文化**：长寿种族可能对时间有不同的感知——百年不见、岁月淡漠、对短暂事物的珍视等。他们的社交节奏、情感表达方式应与人类不同。
+6. **如果种族是人类**，则按正常的现代社会节奏生成事件即可。
+`;
   return `你是一个创意写作助手。请为一个"人生重开"游戏生成这一年发生的事件。
 
-当前年龄：${age}岁
+当前年龄：${age}岁（${getAgeStage(age)}）
 世界设定：${world.name}
 性别：${identity.gender}
 种族：${identity.race}
-${playingAsText}
+${playingAsText}${raceAwarenessBlock}
 当前属性：颜值${attributes.appearance} 智力${attributes.intelligence} 体质${attributes.constitution} 家境${attributes.wealth}
-天赋：${talents.map((t: { name: string }) => t.name).join('、')}
+天赋：${talents.map((t: { name: string }) => t.name).join('、')}${tingyuanBlock}
 **【属性变化规则——极其重要，事件内容必须与属性变化严格对应】每个事件必须在attrChanges中标注属性变化，变化必须与事件内容直接相关：**
 
 - **智力**：学习、读书、拜师、解谜、思考、研究、辩论、悟道 → 智力+1到+2；厌学、荒废、不思进取、被误导 → 智力-1到-2
@@ -262,8 +300,12 @@ ${decisionContext}
 2. 事件要与年龄、属性、天赋、种族、之前的事件逻辑连贯
 3. **如果上次有选择，新事件必须是该选择的直接后果**——承接上文的因果关系，不能脱节
 4. 事件要真实、生动、有戏剧性，不要平淡过滤，但不可搞笑或荒诞
-5. **死亡判定规则：除非玩家60岁以上（自然老死），否则死亡必须由重大抉择的后果驱动——玩家做出了高风险选择并失败才可能死亡，不能随机出现意外死亡。让玩家死得明明白白。**
-6. 如果年龄较大（60岁以上），要考虑健康衰退和自然死亡
+5. **死亡判定规则——极其重要：**
+   - 首先判断种族的自然寿命。非人类种族的寿命远超人类（精灵数百年到上千年、吸血鬼数百年、龙裔更久等），${age}岁对${identity.race}来说属于什么阶段？请自行判断。
+   - 只有在玩家处于该种族意义上的"极度衰老"（接近寿命极限）时，才可能出现自然死亡（衰老、疾病、力量衰退）。
+   - 在任何其他情况下，死亡必须由重大抉择的失败后果驱动——玩家做出了高风险选择并失败才可能死亡，不能随机出现意外死亡。
+   - **如果事件中玩家死亡，必须在 content 中明确写明具体的死因经过**——是什么事件、什么选择、什么后果导致了死亡，描写要具体、有画面感。
+6. 年龄参考：当前${age}岁（${getAgeStage(age)}）。但对于非人类种族，这个年龄的实际意义由你根据种族特性判断。
 7. 在重要人生节点（如升学、就业、恋爱、结婚、创业、重大抉择等，约30%概率）生成选择事件
 8. **选择事件的选项必须从当前事件中自然衍生**——选项是玩家对该事件不同应对方式，必须与事件情节直接相关，不能脱离上下文
 9. 在末尾用JSON格式标注变化，格式如下：
@@ -323,10 +365,24 @@ async function handleTalents(body: any, env: Env, headers: Record<string, string
   }
 }
 
-function buildTalentPrompt(world: { name: string; description: string }, gender: string, race: string) {
+function getAgeStage(age: number): string {
+  if (age < 10) return '幼年';
+  if (age < 20) return '少年';
+  if (age < 30) return '青年';
+  if (age < 50) return '壮年';
+  if (age < 70) return '中年';
+  if (age < 100) return '老年';
+  if (age < 150) return '高寿';
+  if (age < 200) return '极高寿';
+  return '难以想象的高龄';
+}
+
+function buildTalentPrompt(world: { id: string; name: string; description: string }, gender: string, race: string) {
+  const isTingyuan = world.id === 'special_tingyuan';
+  const tingyuanBlock = isTingyuan ? `\n\n**【庭院世界观·角色名单】**\n${TINGYUAN_CHARACTERS}\n\n**【庭院天赋规则——极其重要】**\n1. 背景锁定为中世纪魔法世界观，天赋必须符合魔法/奇幻/宫廷风格\n2. 天赋可以体现与上述庭院成员的关系（如"莉莉丝的得意门生"、"飞矢的鱼语者"等）\n3. 绝对不要出现赛博、科幻、现代等与世界观不符的词汇` : '';
   return `你是一个创意写作助手。请为一个"人生重开"游戏生成天赋卡牌。
 
-世界设定：${world.name} - ${world.description}
+世界设定：${world.name} - ${world.description}${tingyuanBlock}
 性别：${gender}
 种族：${race}
 
@@ -347,6 +403,7 @@ function buildTalentPrompt(world: { name: string; description: string }, gender:
 4. 天赋名称要有创意、有意境，不要千篇一律
 5. 天赋描述要具体，说明它如何影响人生走向
 6. 如果种族是非人类（如龙、兽人、精灵等），天赋要体现种族特色
+7. 天赋应反映种族的特性：长寿种族的"岁月感知"、精灵的"自然亲和"、吸血鬼的"暗夜之力"、龙裔的"龙血觉醒"等
 
 只返回JSON，格式如下：
 {"talents":[{"name":"天赋名","description":"描述","rarity":"common"}]}
