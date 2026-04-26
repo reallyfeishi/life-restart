@@ -1,5 +1,10 @@
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useEffect } from 'react';
 
 export default function Home() {
-  redirect('/game');
+  useEffect(() => {
+    window.location.href = '/game';
+  }, []);
+  return null;
 }
