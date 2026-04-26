@@ -111,8 +111,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'APPLY_EVENT_RESULT': {
       const { age, event } = action.payload;
-      // Apply attribute changes
-      const newAttrs = { ...state.attributes };
+      // Apply attribute changes — defensive init
+      const newAttrs = {
+        appearance: state.attributes.appearance ?? 0,
+        intelligence: state.attributes.intelligence ?? 0,
+        constitution: state.attributes.constitution ?? 0,
+        wealth: state.attributes.wealth ?? 0,
+      };
       const attrKeyMap: Record<string, keyof typeof state.attributes> = {
         appearance: 'appearance', intelligence: 'intelligence',
         constitution: 'constitution', wealth: 'wealth',
@@ -120,9 +125,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
       if (event.attrChanges) {
         for (const [key, value] of Object.entries(event.attrChanges)) {
-          const mappedKey = attrKeyMap[key];
+          // Clean key of trailing digits/plus signs (e.g. "智力0+1" → "智力")
+          const cleanedKey = key.replace(/[0-9+\-]/g, '').trim();
+          const mappedKey = attrKeyMap[cleanedKey];
           if (mappedKey) {
-            newAttrs[mappedKey] = Math.max(0, Math.min(15, newAttrs[mappedKey] + (value as number)));
+            const numValue = typeof value === 'number' ? value : parseInt(String(value), 10) || 0;
+            const current = newAttrs[mappedKey] ?? 0;
+            newAttrs[mappedKey] = Math.max(0, Math.min(15, current + numValue));
           }
         }
       }

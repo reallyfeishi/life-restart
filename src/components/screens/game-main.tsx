@@ -147,9 +147,11 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
                 <div className="flex flex-wrap gap-1 mt-2">
                   {Object.entries(merged).map(([key, value]) => {
                     if (value === 0) return null;
+                    const cleanKey = key.replace(/[0-9+\-]/g, '').trim();
+                    const label = labels[cleanKey] || labels[key] || key;
                     return (
                       <span key={key} className={`text-xs font-semibold ${value > 0 ? 'text-[#5a8c5a]' : 'text-[#b05050]'}`}>
-                        {labels[key] || key}{value > 0 ? '+' : ''}{value}
+                        {label}{value > 0 ? '+' : ''}{value}
                       </span>
                     );
                   })}
