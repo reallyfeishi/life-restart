@@ -266,13 +266,16 @@ ${decisionContext}
 {"content":"事件内容...","attrChanges":{},"resources":{"money":0,"career":"","social":0},"isDecision":false}
 
 选择事件格式（仅在重要节点使用）：
-{"content":"事件内容...","attrChanges":{},"resources":{},"isDecision":true,"decision":{"prompt":"你决定：","options":[{"id":"a","text":"选项A","hint":"成功奖励：xxx | 要求：xxx | 失败代价：xxx"},{"id":"b","text":"选项B","hint":"成功奖励：xxx | 要求：xxx | 失败代价：xxx"},{"id":"c","text":"选项C","hint":"成功奖励：xxx | 要求：xxx | 失败代价：xxx"}],"allowFreeInput":true}}
+{"content":"事件内容...","attrChanges":{},"resources":{},"isDecision":true,"decision":{"prompt":"你决定：","options":[{"id":"a","text":"选项A","hint":"对xxx有极高要求，成功后可能获得xxx，但若失败则可能xxx"},{"id":"b","text":"选项B","hint":"对xxx有xxx要求，成功后可能获得xxx，但若失败则可能xxx"},{"id":"c","text":"选项C","hint":"对xxx有xxx要求，成功后可能获得xxx，但若失败则可能xxx"}],"allowFreeInput":true}}
 
-**选项hint写法要求：每个选项的hint必须包含三部分——**
-- **成功奖励**：选这个选项成功会得到什么（如"智力+2，获得名师指路"）
-- **要求**：需要满足什么条件才能成功（如"体质≥5"、"智力≥7"、"金钱≥100"）
-- **失败代价**：失败会有什么后果（如"体质-1，损失50金钱"）
-- 如果选项不需要特定条件或没有失败代价，可以写"无"
+**选项hint写法要求（极其重要）：hint必须用模糊、含蓄的描述，绝对不能写具体数值！**
+- 错误示例："成功奖励：智力+2 | 要求：体质≥5 | 失败代价：-1体质" ← 禁止这种格式
+- 正确示例："对体质有极高要求，成功后可能获得巨额财富，但若失败则可能元气大伤"
+- 正确示例："需要不俗的胆识，或许能赢得美人的芳心，若不成便徒留遗憾"
+- 用"极高/较高/一般/较低"描述要求难度
+- 用"巨额/丰厚/微薄的回报"描述奖励
+- 用"元气大伤/损失惨重/略有损失/徒留遗憾"描述代价
+- 整体风格要含蓄有韵味，像在暗示一个可能的命运走向
 
 attrChanges只写变化的值（正负均可），不变的不写。
 resources中career为空字符串表示不变，money和social写变化量。
