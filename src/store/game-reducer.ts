@@ -122,7 +122,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         for (const [key, value] of Object.entries(event.attrChanges)) {
           const mappedKey = attrKeyMap[key];
           if (mappedKey) {
-            newAttrs[mappedKey] = Math.max(0, Math.min(20, newAttrs[mappedKey] + (value as number)));
+            newAttrs[mappedKey] = Math.max(0, Math.min(15, newAttrs[mappedKey] + (value as number)));
           }
         }
       }
