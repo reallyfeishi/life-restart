@@ -50,6 +50,7 @@ export function IdentitySetup() {
   const { state, dispatch, setIdentity } = useGame();
   const [extraInfo, setExtraInfo] = useState(state.identity?.extraInfo || '');
   const [tingyuanCharacters, setTingyuanCharacters] = useState<string[]>([]);
+  const [tingyuanShowAll, setTingyuanShowAll] = useState(false);
   const [detectedCharacter, setDetectedCharacter] = useState<string | null>(null);
 
   // Load tingyuan characters if using special world
@@ -152,7 +153,7 @@ export function IdentitySetup() {
             <div className="mt-3 p-3 bg-bg-card border border-border rounded-card">
               <p className="text-xs text-text-aux mb-2">输入&apos;我是[角色名]&apos;或直接输入角色名即可扮演该角色：</p>
               <div className="flex flex-wrap gap-1">
-                {tingyuanCharacters.slice(0, 10).map(char => (
+                {(tingyuanShowAll ? tingyuanCharacters : tingyuanCharacters.slice(0, 10)).map(char => (
                   <button
                     key={char}
                     onClick={() => setExtraInfo(`我是${char}`)}
@@ -166,7 +167,12 @@ export function IdentitySetup() {
                   </button>
                 ))}
                 {tingyuanCharacters.length > 10 && (
-                  <span className="text-xs text-text-aux px-2 py-1">+{tingyuanCharacters.length - 10}...</span>
+                  <button
+                    onClick={() => setTingyuanShowAll(!tingyuanShowAll)}
+                    className="text-xs text-[#4a6fa5] px-2 py-1 cursor-pointer hover:underline"
+                  >
+                    {tingyuanShowAll ? '收起' : `+${tingyuanCharacters.length - 10}...`}
+                  </button>
                 )}
               </div>
               {detectedCharacter && (
