@@ -128,10 +128,21 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
       // Apply resource changes
       const newResources = { ...state.resources };
+      const resourceKeyMap: Record<string, keyof typeof state.resources> = {
+        money: 'money', career: 'career', social: 'social',
+        金钱: 'money', 职业: 'career', 人脉: 'social',
+      };
       if (event.resources) {
-        if (event.resources.money !== undefined) newResources.money = Math.max(-1000, Math.min(10000000, (state.resources.money || 0) + (event.resources.money as number)));
-        if (event.resources.career) newResources.career = event.resources.career;
-        if (event.resources.social !== undefined) newResources.social = Math.max(0, Math.min(200, (state.resources.social || 0) + (event.resources.social as number)));
+        for (const [key, value] of Object.entries(event.resources)) {
+          const mappedKey = resourceKeyMap[key];
+          if (mappedKey === 'money' && value !== undefined) {
+            newResources.money = Math.max(-1000, Math.min(10000000, (state.resources.money || 0) + (value as number)));
+          } else if (mappedKey === 'career' && value) {
+            newResources.career = value as string;
+          } else if (mappedKey === 'social' && value !== undefined) {
+            newResources.social = Math.max(0, Math.min(200, (state.resources.social || 0) + (value as number)));
+          }
+        }
       }
 
       // Check death
