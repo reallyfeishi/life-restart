@@ -7,4 +7,5 @@ export interface Identity {
   race: Race;
   raceCustom?: string;
   extraInfo: string;
+  playingAs?: string;
 }
