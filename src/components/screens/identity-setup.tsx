@@ -93,7 +93,7 @@ export function IdentitySetup() {
   return (
     <div className="flex flex-col items-center min-h-dvh px-6 py-8">
       <div className="text-center mb-8">
-        <div className="text-2xl mb-2" style={{ color: '#4a6fa5' }}>✦</div>
+        <div className="text-2xl mb-2" style={{ color: '#a85656' }}>✦</div>
         <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">身份设定</h2>
         <p className="text-text-aux text-sm">选择你这一世的性别和种族</p>
       </div>
@@ -128,7 +128,7 @@ export function IdentitySetup() {
                 onClick={() => setIdentity({ race: r.id })}
                 className={`border rounded-card p-4 flex flex-col items-center gap-2 transition-all duration-fast cursor-pointer ${
                   race === r.id
-                    ? 'border-[#4a6fa5] bg-bg-card shadow-card'
+                    ? 'border-[#a85656] bg-bg-card shadow-card'
                     : 'border-border bg-bg-card hover:shadow-card'
                 }`}
               >
@@ -139,7 +139,7 @@ export function IdentitySetup() {
           </div>
           {isCustomRace && (
             <input
-              className="w-full mt-3 border border-border rounded-btn p-3 text-sm text-text-body bg-bg-card focus:outline-none focus:ring-1 focus:ring-[#4a6fa5]/30 transition-all"
+              className="w-full mt-3 border border-border rounded-btn p-3 text-sm text-text-body bg-bg-card focus:outline-none focus:ring-1 focus:ring-[#a85656]/30 transition-all"
               placeholder="请输入自定义种族名称..."
               value={raceCustom}
               onChange={(e) => setRaceCustom(e.target.value)}
@@ -151,7 +151,7 @@ export function IdentitySetup() {
         <div>
           <h3 className="font-serif-sc font-semibold text-text-title text-base mb-2">额外信息（可选）</h3>
           <textarea
-            className="w-full border border-border rounded-card p-3 text-sm text-text-body bg-bg-card resize-none focus:outline-none focus:ring-1 focus:ring-[#4a6fa5]/30 transition-all"
+            className="w-full border border-border rounded-card p-3 text-sm text-text-body bg-bg-card resize-none focus:outline-none focus:ring-1 focus:ring-[#a85656]/30 transition-all"
             rows={3}
             maxLength={100}
             placeholder="告诉命运编织者更多关于你的角色的事... 如：从小失明、有一个宿敌、前世是国王..."
@@ -171,7 +171,7 @@ export function IdentitySetup() {
                     onClick={() => setExtraInfo(`我是${char}`)}
                     className={`text-xs px-2 py-1 rounded-btn cursor-pointer transition-colors ${
                       detectedCharacter === char
-                        ? 'bg-[#4a6fa5] text-white'
+                        ? 'bg-[#a85656] text-white'
                         : 'bg-bg-page text-text-aux hover:text-text-title'
                     }`}
                   >
@@ -181,7 +181,7 @@ export function IdentitySetup() {
                 {tingyuanCharacters.length > 10 && (
                   <button
                     onClick={() => setTingyuanShowAll(!tingyuanShowAll)}
-                    className="text-xs text-[#4a6fa5] px-2 py-1 cursor-pointer hover:underline"
+                    className="text-xs text-[#a85656] px-2 py-1 cursor-pointer hover:underline"
                   >
                     {tingyuanShowAll ? '收起' : `+${tingyuanCharacters.length - 10}...`}
                   </button>
@@ -197,7 +197,7 @@ export function IdentitySetup() {
 
       <button
         className="w-full mt-4 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white btn-press py-3"
-        style={{ backgroundColor: canProceed ? '#4a6fa5' : '#b8b3a8' }}
+        style={{ backgroundColor: canProceed ? '#a85656' : '#b8b3a8' }}
         disabled={!canProceed}
         onClick={handleNext}
       >

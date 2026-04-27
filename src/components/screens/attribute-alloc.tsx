@@ -69,6 +69,7 @@ export function AttributeAlloc() {
 
   return (
     <div className="flex flex-col min-h-dvh px-6 py-6">
+      {/* Top back button */}
       <div className="flex items-center gap-3 mb-4">
         <button
           className="text-text-aux text-xl cursor-pointer hover:text-text-title transition-colors"
@@ -79,82 +80,86 @@ export function AttributeAlloc() {
         <h2 className="font-serif-sc text-xl font-bold text-text-title">属性分配</h2>
       </div>
 
-      <div className="bg-bg-card border border-border rounded-card p-3 mb-4 flex items-center justify-between">
-        <span className="text-text-aux text-sm">剩余</span>
-        <div className="flex items-center gap-2">
-          <span className="text-2xl font-bold font-serif-sc" style={{ color: remaining === 0 ? '#5a8c5a' : '#c4883a' }}>
-            {remaining}
-          </span>
-          <span className="text-text-aux text-sm">/ {totalPoints} 点</span>
+      {/* Remaining points - centered */}
+      <div className="text-center mb-4">
+        <div className="text-4xl font-bold font-serif-sc" style={{ color: remaining === 0 ? '#5a8c5a' : '#a85656' }}>
+          {remaining}
         </div>
+        <div className="text-xs text-text-aux mt-1">剩余 {remaining} / {totalPoints} 点</div>
       </div>
 
+      {/* Diamond separator */}
+      <div className="text-center text-xl my-2" style={{ color: '#a85656' }}>✦</div>
+
+      {/* Talents info */}
       {state.talents.length > 0 && (
-        <div className="bg-bg-card border border-border rounded-card p-3 mb-4">
-          <p className="text-text-aux text-xs">
-            天赋: {state.talents.map((t: { name: string }) => t.name).join(' · ')}
-          </p>
+        <div className="text-center text-xs text-text-aux mb-4">
+          {state.talents.map((t: { name: string }) => t.name).join(' · ')}
           {bonusPoints > 0 && (
-            <p className="text-text-aux text-xs mt-1" style={{ color: '#5a8c5a' }}>
-              天赋加成: +{bonusPoints} 点属性
-            </p>
+            <span style={{ color: '#5a8c5a' }}> · +{bonusPoints}点</span>
           )}
         </div>
       )}
 
+      {/* Attribute rows */}
       <div className="space-y-4 flex-1">
         {ATTRS.map((attr) => (
-          <div key={attr.key} className="bg-bg-card border border-border rounded-card p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">{attr.icon}</span>
-              <span className="font-serif-sc font-semibold text-text-title">{attr.name}</span>
+          <div key={attr.key} className="bg-bg-card border border-border rounded-card p-3">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">{attr.icon}</span>
+                <span className="font-serif-sc font-semibold text-text-title text-sm">{attr.name}</span>
+              </div>
+              <span className="text-text-aux text-xs">{attr.desc}</span>
             </div>
-            <p className="text-text-aux text-xs mb-3">{attr.desc}</p>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 flex-shrink-0">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <button
-                  className="w-8 h-8 rounded-full border border-border bg-bg-page text-text-title font-bold text-lg cursor-pointer hover:bg-border/30 transition-colors flex items-center justify-center btn-press"
+                  className="w-7 h-7 rounded-full border border-border bg-bg-page text-text-title font-bold cursor-pointer hover:bg-border/30 transition-colors flex items-center justify-center btn-press disabled:opacity-30 text-lg"
                   onClick={() => adjustAttr(attr.key, -1)}
                   disabled={attrs[attr.key] <= 0}
                 >
                   −
                 </button>
-                <div className="w-10 text-center">
-                  <span className="text-xl font-bold font-serif-sc text-text-title">{attrs[attr.key]}</span>
-                </div>
                 <button
-                  className="w-8 h-8 rounded-full border border-border bg-bg-page text-text-title font-bold text-lg cursor-pointer hover:bg-border/30 transition-colors flex items-center justify-center btn-press disabled:opacity-30"
+                  className="w-7 h-7 rounded-full border border-border bg-bg-page text-text-title font-bold cursor-pointer hover:bg-border/30 transition-colors flex items-center justify-center btn-press disabled:opacity-30 text-lg"
                   onClick={() => adjustAttr(attr.key, 1)}
                   disabled={attrs[attr.key] >= 10 || remaining <= 0}
                 >
                   +
                 </button>
               </div>
-              <div className="flex gap-0.5 flex-1 min-w-0">
+              {/* Slider track */}
+              <div className="flex-1 flex gap-0.5 min-w-0">
                 {[...Array(10)].map((_, i) => (
                   <div
                     key={i}
                     className={`h-2 rounded-sm transition-colors flex-1 ${
-                      i < attrs[attr.key] ? 'bg-[#4a6fa5]' : 'bg-border/40'
+                      i < attrs[attr.key] ? 'bg-[#a85656]' : 'bg-border/40'
                     }`}
                   />
                 ))}
               </div>
+              {/* Value */}
+              <span className="text-2xl font-bold font-serif-sc text-text-title w-8 text-center flex-shrink-0">
+                {attrs[attr.key]}
+              </span>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Bottom buttons */}
       <div className="flex gap-3 mt-4 pb-2">
         <button
-          className="flex-1 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#4a6fa5] border border-[#4a6fa5] bg-transparent btn-press"
+          className="flex-1 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#a85656] border border-[#a85656] bg-transparent btn-press"
           onClick={handleRandom}
         >
           随机分配
         </button>
         <button
           className="flex-1 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white btn-press"
-          style={{ backgroundColor: canStart ? '#4a6fa5' : '#b8b3a8' }}
+          style={{ backgroundColor: canStart ? '#a85656' : '#b8b3a8' }}
           disabled={!canStart}
           onClick={handleStart}
         >

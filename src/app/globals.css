@@ -25,7 +25,7 @@
   --color-world-wasteland: #b05050;
 
   /* Rarity colors */
-  --color-rarity-common: #4a6fa5;
+  --color-rarity-common: #8a857b;
   --color-rarity-rare: #7c5cbf;
   --color-rarity-epic: #c4883a;
   --color-rarity-legendary: #e8602a;
@@ -149,6 +149,15 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Button press effect */
 .btn-press:active {
   transform: scale(0.97);
@@ -162,4 +171,14 @@
 
 .achievement-glow {
   animation: glow 2s ease-in-out infinite;
+}
+
+/* Page transition animation */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-page-in {
+  animation: pageIn 0.3s ease-out;
 }

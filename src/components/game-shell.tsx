@@ -21,7 +21,7 @@ export function GameShell() {
 
   return (
     <div className="max-w-[460px] mx-auto flex flex-col h-dvh bg-bg-page page-texture relative">
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide animate-page-in" key={state.phase}>
         {state.phase === 'world-select' && <WorldSelect />}
         {state.phase === 'custom-world' && <CustomWorld />}
         {state.phase === 'writing-style-select' && <WritingStyleSelect />}
@@ -51,7 +51,7 @@ function Footer() {
             className={`px-2 py-1 rounded-btn text-xs cursor-pointer transition-colors duration-fast select-none border ${
               state.disableThinking
                 ? 'bg-bg-card border-border text-text-aux'
-                : 'border-[#4a6fa5] text-[#4a6fa5] bg-[#4a6fa5]/10'
+                : 'border-[#a85656] text-[#a85656] bg-[#a85656]/10'
             }`}
             onClick={toggleThinking}
             title={state.disableThinking ? '点击启用深度思考' : '点击关闭深度思考'}
@@ -60,7 +60,7 @@ function Footer() {
           </button>
         )}
         <select
-          className="bg-bg-card border border-border rounded-btn px-2 py-1 text-xs text-text-aux cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#4a6fa5]/30"
+          className="bg-bg-card border border-border rounded-btn px-2 py-1 text-xs text-text-aux cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#a85656]/30"
           value={state.selectedModel}
           onChange={(e) => setModel(e.target.value)}
         >

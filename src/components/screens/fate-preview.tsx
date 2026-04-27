@@ -83,7 +83,7 @@ export function FatePreview() {
   return (
     <div className="flex flex-col min-h-dvh px-6 py-6">
       <div className="text-center mb-6">
-        <div className="text-2xl mb-2" style={{ color: '#4a6fa5' }}>✦</div>
+        <div className="text-2xl mb-2" style={{ color: '#a85656' }}>✦</div>
         <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">命运预览</h2>
         <p className="text-text-aux text-sm">确认你的角色信息，准备开始人生</p>
       </div>
@@ -114,7 +114,7 @@ export function FatePreview() {
                   <span className="text-xs px-2 py-0.5 rounded-tag text-white" style={{
                     backgroundColor: talent.rarity === 'legendary' ? '#e8602a' :
                       talent.rarity === 'epic' ? '#c4883a' :
-                      talent.rarity === 'rare' ? '#7c5cbf' : '#4a6fa5'
+                      talent.rarity === 'rare' ? '#7c5cbf' : '#a85656'
                   }}>
                     {talent.rarity === 'common' ? '常见' : talent.rarity === 'rare' ? '稀有' : talent.rarity === 'epic' ? '史诗' : '传说'}
                   </span>
@@ -164,13 +164,13 @@ export function FatePreview() {
 
       <div className="flex gap-3 mt-4 pb-2">
         <button
-          className="flex-1 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#4a6fa5] border border-[#4a6fa5] bg-transparent btn-press"
+          className="flex-1 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#a85656] border border-[#a85656] bg-transparent btn-press"
           onClick={() => dispatch({ type: 'RESET_GAME' })}
         >
           返回
         </button>
         <button
-          className="flex-1 min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#4a6fa5] btn-press"
+          className="flex-1 min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#a85656] btn-press"
           onClick={handleStart}
           disabled={loading}
         >

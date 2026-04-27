@@ -9,7 +9,7 @@ export function DeathScreen() {
 
   const score = calculateScore(state);
   const grade = score >= 90 ? 'S' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D';
-  const gradeColor = grade === 'S' ? '#e8602a' : grade === 'A' ? '#c4883a' : grade === 'B' ? '#4a6fa5' : '#8a857b';
+  const gradeColor = grade === 'S' ? '#e8602a' : grade === 'A' ? '#c4883a' : grade === 'B' ? '#a85656' : '#8a857b';
 
   return (
     <div className="flex flex-col min-h-dvh px-6 py-8">
@@ -66,7 +66,7 @@ export function DeathScreen() {
 
       <div className="flex gap-3 mt-4">
         <button
-          className="flex-1 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#4a6fa5] btn-press"
+          className="flex-1 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#a85656] btn-press"
           onClick={resetGame}
         >
           再来一局

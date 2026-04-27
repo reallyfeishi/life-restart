@@ -82,7 +82,7 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
               style={{
                 backgroundColor: talent.rarity === 'legendary' ? '#e8602a' :
                   talent.rarity === 'epic' ? '#c4883a' :
-                  talent.rarity === 'rare' ? '#7c5cbf' : '#4a6fa5'
+                  talent.rarity === 'rare' ? '#7c5cbf' : '#a85656'
               }}
               title={talent.description}
             >
@@ -124,42 +124,54 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
             你即将开始新的人生...
           </div>
         )}
-        {state.events.map((event: GameEvent, index: number) => (
-          <div
-            key={index}
-            className="bg-bg-card border border-border rounded-card p-3 shadow-card animate-fade-in"
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-serif-sc font-bold text-sm text-[#4a6fa5]">{event.age} 岁</span>
-              {index === state.events.length - 1 && (
-                <span className="text-[10px] text-text-muted">◀ 当前</span>
-              )}
+        {state.events.map((event: GameEvent, index: number) => {
+          const isLast = index === state.events.length - 1;
+          return (
+            <div
+              key={index}
+              className={`bg-bg-card border border-border rounded-card p-3 shadow-card animate-fade-in ${
+                isLast ? 'border-l-4 border-l-[#a85656] pl-3' : ''
+              }`}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-serif-sc font-bold text-sm text-[#a85656]">{event.age} 岁</span>
+                {isLast && (
+                  <span className="text-[10px] text-text-muted bg-bg-page px-1.5 py-0.5 rounded">◀ 当前</span>
+                )}
+              </div>
+              <p className="text-text-body text-sm leading-relaxed">{event.content}</p>
+              {event.attrChanges && Object.values(event.attrChanges).some(v => v !== 0) && (() => {
+                const merged: Record<string, number> = {};
+                for (const [key, value] of Object.entries(event.attrChanges)) {
+                  merged[key] = (merged[key] || 0) + (value as number);
+                }
+                const labels: Record<string, string> = { appearance: '颜值', intelligence: '智力', constitution: '体质', wealth: '家境' };
+                const icons: Record<string, string> = { appearance: '✨', intelligence: '🧠', constitution: '💪', wealth: '💰' };
+                return (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {Object.entries(merged).map(([key, value]) => {
+                      if (value === 0) return null;
+                      const cleanKey = key.replace(/[0-9+\-]/g, '').trim();
+                      const label = labels[cleanKey] || labels[key] || key;
+                      const icon = icons[cleanKey] || icons[key] || '';
+                      const isPositive = value > 0;
+                      return (
+                        <span
+                          key={key}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold ${
+                            isPositive ? 'bg-[#5a8c5a]/10 text-[#5a8c5a]' : 'bg-[#b05050]/10 text-[#b05050]'
+                          }`}
+                        >
+                          {icon}{label}{isPositive ? '+' : ''}{value}
+                        </span>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
-            <p className="text-text-body text-sm leading-relaxed">{event.content}</p>
-            {event.attrChanges && Object.values(event.attrChanges).some(v => v !== 0) && (() => {
-              // Merge duplicate attribute keys into a single change
-              const merged: Record<string, number> = {};
-              for (const [key, value] of Object.entries(event.attrChanges)) {
-                merged[key] = (merged[key] || 0) + (value as number);
-              }
-              const labels: Record<string, string> = { appearance: '颜值', intelligence: '智力', constitution: '体质', wealth: '家境' };
-              return (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {Object.entries(merged).map(([key, value]) => {
-                    if (value === 0) return null;
-                    const cleanKey = key.replace(/[0-9+\-]/g, '').trim();
-                    const label = labels[cleanKey] || labels[key] || key;
-                    return (
-                      <span key={key} className={`text-xs font-semibold ${value > 0 ? 'text-[#5a8c5a]' : 'text-[#b05050]'}`}>
-                        {label}{value > 0 ? '+' : ''}{value}
-                      </span>
-                    );
-                  })}
-                </div>
-              );
-            })()}
-          </div>
-        ))}
+          );
+        })}
 
         {/* Inline Decision Card */}
         {state.pendingDecision && (

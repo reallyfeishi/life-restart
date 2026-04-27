@@ -6,7 +6,7 @@ import { Talent } from '@/types/talent';
 import { API_BASE_URL } from '@/lib/config';
 
 const RARITY_COLORS: Record<string, string> = {
-  common: '#4a6fa5',
+  common: '#8a857b',
   rare: '#7c5cbf',
   epic: '#c4883a',
   legendary: '#e8602a',
@@ -106,12 +106,12 @@ export function TalentDraw() {
     return (
       <div className="flex flex-col items-center min-h-dvh px-6 py-8">
         <div className="text-center mb-8 mt-16">
-          <div className="text-3xl mb-4" style={{ color: '#4a6fa5' }}>✦</div>
+          <div className="text-3xl mb-4" style={{ color: '#a85656' }}>✦</div>
           <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">天赋抽取</h2>
           <p className="text-text-aux text-sm">命运将为你揭示三张天赋牌</p>
         </div>
         <button
-          className={`mt-8 min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#4a6fa5] btn-press py-4 ${isLoading ? 'opacity-50' : ''}`}
+          className={`mt-8 min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#a85656] btn-press py-4 ${isLoading ? 'opacity-50' : ''}`}
           onClick={handleReveal}
           disabled={isLoading}
         >
@@ -124,7 +124,7 @@ export function TalentDraw() {
   return (
     <div className="flex flex-col items-center min-h-dvh px-6 py-8">
       <div className="text-center mb-6 mt-8">
-        <div className="text-2xl mb-2" style={{ color: '#4a6fa5' }}>✦</div>
+        <div className="text-2xl mb-2" style={{ color: '#a85656' }}>✦</div>
         <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">你的天赋</h2>
       </div>
 
@@ -157,7 +157,7 @@ export function TalentDraw() {
       <div className="w-full mt-4 space-y-2">
         {redrawCount > 0 && (
           <button
-            className={`w-full min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#4a6fa5] border border-[#4a6fa5] bg-transparent btn-press ${isLoading ? 'opacity-50' : ''}`}
+            className={`w-full min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#a85656] border border-[#a85656] bg-transparent btn-press ${isLoading ? 'opacity-50' : ''}`}
             onClick={handleRedraw}
             disabled={isLoading}
           >
@@ -165,7 +165,7 @@ export function TalentDraw() {
           </button>
         )}
         <button
-          className="w-full min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#4a6fa5] btn-press"
+          className="w-full min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#a85656] btn-press"
           onClick={handleConfirm}
         >
           开始分配属性

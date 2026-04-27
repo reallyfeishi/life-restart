@@ -12,7 +12,7 @@ export function LifeSummaryCard({ onConfirm }: LifeSummaryCardProps) {
   const { state } = useGame();
   const score = calculateScore(state);
   const grade = score >= 90 ? 'S' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 60 ? 'C' : 'D';
-  const gradeColor = grade === 'S' ? '#e8602a' : grade === 'A' ? '#c4883a' : grade === 'B' ? '#4a6fa5' : '#8a857b';
+  const gradeColor = grade === 'S' ? '#e8602a' : grade === 'A' ? '#c4883a' : grade === 'B' ? '#a85656' : '#8a857b';
 
   const genderIcon = state.identity?.gender === 'male' ? '👦' : '👧';
   const raceLabel = state.identity?.race === 'human' ? '人类' :
@@ -61,7 +61,7 @@ export function LifeSummaryCard({ onConfirm }: LifeSummaryCardProps) {
 
       {/* Confirm button */}
       <button
-        className="w-full min-h-[40px] rounded-btn font-semibold text-sm bg-[#4a6fa5] text-white hover:bg-[#3d5f8a] transition-colors cursor-pointer btn-press"
+        className="w-full min-h-[40px] rounded-btn font-semibold text-sm bg-[#a85656] text-white hover:bg-[#8f4a4a] transition-colors cursor-pointer btn-press"
         onClick={onConfirm}
       >
         查看人生总结

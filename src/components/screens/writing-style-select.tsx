@@ -10,7 +10,7 @@ export function WritingStyleSelect() {
   return (
     <div className="flex flex-col items-center min-h-dvh px-6 py-8">
       <div className="text-center mb-8">
-        <div className="text-2xl mb-2" style={{ color: '#4a6fa5' }}>✦</div>
+        <div className="text-2xl mb-2" style={{ color: '#a85656' }}>✦</div>
         <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">选择文风</h2>
         <p className="text-text-aux text-sm">你希望人生故事以怎样的笔调展开？</p>
       </div>
@@ -42,7 +42,7 @@ export function WritingStyleSelect() {
       <button
         className="w-full mt-4 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white btn-press py-3"
         style={{
-          backgroundColor: selectedStyle ? '#4a6fa5' : '#b8b3a8',
+          backgroundColor: selectedStyle ? '#a85656' : '#b8b3a8',
         }}
         disabled={!selectedStyle}
         onClick={() => dispatch({ type: 'SET_PHASE', payload: 'identity-setup' })}

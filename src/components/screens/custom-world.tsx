@@ -61,7 +61,7 @@ export function CustomWorld() {
 
       <div className="w-full flex-1 flex flex-col">
         <textarea
-          className="w-full flex-1 min-h-[200px] bg-bg-card border border-border rounded-card p-4 text-sm text-text-title placeholder-text-aux/50 outline-none focus:ring-1 focus:ring-[#4a6fa5]/30 resize-none"
+          className="w-full flex-1 min-h-[200px] bg-bg-card border border-border rounded-card p-4 text-sm text-text-title placeholder-text-aux/50 outline-none focus:ring-1 focus:ring-[#a85656]/30 resize-none"
           placeholder="例如：这是一个魔法与科技并存的世界，天空中漂浮着巨大的岛屿..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -73,7 +73,7 @@ export function CustomWorld() {
       <div className="w-full mt-4 space-y-2">
         <button
           className={`w-full min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white btn-press ${
-            description.trim() ? 'bg-[#4a6fa5]' : 'bg-border/40'
+            description.trim() ? 'bg-[#a85656]' : 'bg-border/40'
           } ${isSubmitting ? 'opacity-50' : ''}`}
           disabled={!description.trim() || isSubmitting}
           onClick={handleSubmit}

@@ -37,7 +37,7 @@ export function DecisionCard({ decision, age, onConfirm }: DecisionCardProps) {
             key={option.id}
             className={`flex items-start gap-3 p-3 rounded-card border cursor-pointer transition-colors ${
               selectedOption === option.id
-                ? 'border-[#4a6fa5] bg-[#4a6fa5]/5'
+                ? 'border-[#a85656] bg-[#a85656]/5'
                 : 'border-border bg-bg-page hover:border-border/80'
             }`}
           >
@@ -47,7 +47,7 @@ export function DecisionCard({ decision, age, onConfirm }: DecisionCardProps) {
               value={option.id}
               checked={selectedOption === option.id}
               onChange={() => setSelectedOption(option.id)}
-              className="mt-0.5 flex-shrink-0 accent-[#4a6fa5]"
+              className="mt-0.5 flex-shrink-0 accent-[#a85656]"
             />
             <div className="flex-1 min-w-0">
               <div className="text-sm text-text-title">{option.text}</div>
@@ -61,7 +61,7 @@ export function DecisionCard({ decision, age, onConfirm }: DecisionCardProps) {
           <div
             className={`p-3 rounded-card border transition-colors ${
               selectedOption === null && hasCustomInput
-                ? 'border-[#4a6fa5] bg-[#4a6fa5]/5'
+                ? 'border-[#a85656] bg-[#a85656]/5'
                 : 'border-border bg-bg-page'
             }`}
           >
@@ -89,7 +89,7 @@ export function DecisionCard({ decision, age, onConfirm }: DecisionCardProps) {
       <button
         className={`w-full min-h-[40px] rounded-btn font-semibold text-sm transition-colors cursor-pointer btn-press ${
           canConfirm
-            ? 'bg-[#4a6fa5] text-white hover:bg-[#3d5f8a]'
+            ? 'bg-[#a85656] text-white hover:bg-[#8f4a4a]'
             : 'bg-border/40 text-text-aux/50 cursor-not-allowed'
         }`}
         disabled={!canConfirm}
