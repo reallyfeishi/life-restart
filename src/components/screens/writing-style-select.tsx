@@ -9,13 +9,13 @@ export function WritingStyleSelect() {
 
   return (
     <div className="flex flex-col items-center min-h-dvh px-6 py-8">
-      <div className="text-center mb-8 mt-16">
+      <div className="text-center mb-8">
         <div className="text-2xl mb-2" style={{ color: '#4a6fa5' }}>✦</div>
         <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">选择文风</h2>
         <p className="text-text-aux text-sm">你希望人生故事以怎样的笔调展开？</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 w-full flex-1">
+      <div className="grid grid-cols-2 gap-3 w-full mb-4">
         {WRITING_STYLES.map((style) => {
           const isSelected = selectedStyle === style.id;
           return (
@@ -33,7 +33,7 @@ export function WritingStyleSelect() {
               )}
               <div className="text-2xl mb-2">{style.icon}</div>
               <h3 className="font-serif-sc font-semibold text-text-title text-base mb-1">{style.name}</h3>
-              <p className="text-text-aux text-xs leading-relaxed">{style.description}</p>
+              <p className="text-text-aux text-xs leading-relaxed line-clamp-2">{style.description}</p>
             </button>
           );
         })}
