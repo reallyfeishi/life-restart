@@ -401,7 +401,12 @@ async function handleTalents(body: any, env: Env, headers: Record<string, string
     }
     throw new Error('No JSON found in response');
   } catch (e: any) {
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers });
+    const fallback = [
+      { id: 'fallback_1', name: '命运之子', description: '全属性+1，天生好命', rarity: 'legendary' },
+      { id: 'fallback_2', name: '过目不忘', description: '学习能力超群', rarity: 'rare' },
+      { id: 'fallback_3', name: '幸运星', description: '随机正面事件触发率增加', rarity: 'common' },
+    ];
+    return new Response(JSON.stringify({ talents: fallback, error: e.message }), { status: 200, headers });
   }
 }
 
