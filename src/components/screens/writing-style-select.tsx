@@ -23,12 +23,9 @@ export function WritingStyleSelect() {
               key={style.id}
               onClick={() => dispatch({ type: 'SET_WRITING_STYLE', payload: style.id })}
               className={`w-full text-left border rounded-card p-4 shadow-card transition-all duration-fast relative overflow-hidden cursor-pointer ${
-                isSelected ? 'ring-1 shadow-card-hover' : 'border-border bg-bg-card hover:shadow-card-hover'
+                isSelected ? 'border-2 shadow-card-hover' : 'border-border bg-bg-card hover:shadow-card-hover'
               }`}
-              style={isSelected ? {
-                borderColor: style.color,
-                ringColor: `${style.color}30`,
-              } : undefined}
+              style={isSelected ? { borderColor: style.color } : undefined}
               tabIndex={0}
             >
               {isSelected && (

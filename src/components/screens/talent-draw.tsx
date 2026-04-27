@@ -56,8 +56,8 @@ export function TalentDraw() {
         effects: [],
         worlds: [],
       }));
-    } catch (e: any) {
-      console.error('Talent draw error:', e.message);
+    } catch (e: unknown) {
+      console.error('Talent draw error:', e instanceof Error ? e.message : String(e));
       return FALLBACK_TALENTS;
     }
   }, [state.world, state.identity, state.selectedModel, state.disableThinking]);
