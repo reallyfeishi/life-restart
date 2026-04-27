@@ -51,7 +51,7 @@ export function WorldSelect() {
           backgroundColor: selectedWorld ? '#4a6fa5' : '#b8b3a8',
         }}
         disabled={!selectedWorld}
-        onClick={() => dispatch({ type: 'SET_PHASE', payload: 'identity-setup' })}
+        onClick={() => dispatch({ type: 'SET_PHASE', payload: 'writing-style-select' })}
       >
         {selectedWorld ? '下一个' : '请选择一个世界'}
       </button>

@@ -21,6 +21,7 @@ export type GameAction =
   | { type: 'UPDATE_RESOURCES'; payload: Partial<{ money: number; career: string; social: number }> }
   | { type: 'SET_MODEL'; payload: string }
   | { type: 'TOGGLE_THINKING' }
+  | { type: 'SET_WRITING_STYLE'; payload: string }
   | { type: 'SET_PENDING_DECISION'; payload: { age: number; decision: import('@/types/event').Decision } | null }
   | { type: 'APPLY_EVENT_RESULT'; payload: { age: number; event: GameEvent } }
   | { type: 'RESET_GAME' };
@@ -43,6 +44,7 @@ export const initialState: GameState = {
   resources: { money: 0, career: '无业', social: 0 },
   selectedModel: 'glm-5',
   disableThinking: false,
+  writingStyle: 'warm_novel',
   pendingDecision: null,
 };
 
@@ -105,6 +107,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'TOGGLE_THINKING':
       return { ...state, disableThinking: !state.disableThinking };
+
+    case 'SET_WRITING_STYLE':
+      return { ...state, writingStyle: action.payload };
 
     case 'SET_PENDING_DECISION':
       return { ...state, pendingDecision: action.payload, isAutoPlaying: action.payload === null ? state.isAutoPlaying : false };

@@ -3,6 +3,7 @@
 import { useGame } from '@/store/game-context';
 import { WorldSelect } from './screens/world-select';
 import { CustomWorld } from './screens/custom-world';
+import { WritingStyleSelect } from './screens/writing-style-select';
 import { IdentitySetup } from './screens/identity-setup';
 import { TalentDraw } from './screens/talent-draw';
 import { AttributeAlloc } from './screens/attribute-alloc';
@@ -23,6 +24,7 @@ export function GameShell() {
       <div className="flex-1 min-h-0 overflow-y-auto">
         {state.phase === 'world-select' && <WorldSelect />}
         {state.phase === 'custom-world' && <CustomWorld />}
+        {state.phase === 'writing-style-select' && <WritingStyleSelect />}
         {state.phase === 'identity-setup' && <IdentitySetup />}
         {state.phase === 'talent-draw' && <TalentDraw />}
         {state.phase === 'attribute-alloc' && <AttributeAlloc />}

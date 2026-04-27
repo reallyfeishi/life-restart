@@ -110,6 +110,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             resources: state.resources,
             model: state.selectedModel,
             disableThinking: state.disableThinking,
+            writingStyle: state.writingStyle,
             decision: { optionId, optionText, customInput },
           }),
         });
@@ -127,7 +128,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       }
     };
     nextYearWithDecision();
-  }, [state.currentAge, state.attributes, state.talents, state.events, state.world, state.identity, state.resources, state.selectedModel, state.disableThinking, addEvent, applyEventChanges]);
+  }, [state.currentAge, state.attributes, state.talents, state.events, state.world, state.identity, state.resources, state.selectedModel, state.disableThinking, state.writingStyle, addEvent, applyEventChanges]);
 
   const resetGame = useCallback(() => {
     dispatch({ type: 'RESET_GAME' });
@@ -153,6 +154,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           resources: state.resources,
           model: state.selectedModel,
           disableThinking: state.disableThinking,
+          writingStyle: state.writingStyle,
         }),
       });
 
@@ -178,7 +180,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsProcessing(false);
     }
-  }, [state.currentAge, state.attributes, state.disableThinking, state.selectedModel, state.talents, state.events, state.world, state.identity, state.resources, addEvent, setDeath, updateResources, isProcessing, applyEventChanges]);
+  }, [state.currentAge, state.attributes, state.disableThinking, state.selectedModel, state.writingStyle, state.talents, state.events, state.world, state.identity, state.resources, addEvent, setDeath, updateResources, isProcessing, applyEventChanges]);
 
   return (
     <GameContext.Provider value={{

@@ -26,6 +26,7 @@ export function FatePreview() {
             attributes: state.attributes,
             model: state.selectedModel,
             disableThinking: state.disableThinking,
+            writingStyle: state.writingStyle,
           }),
         });
         const data = await response.json();

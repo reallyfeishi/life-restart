@@ -7,6 +7,7 @@ import { GameEvent, Decision } from './event';
 export type GamePhase =
   | 'world-select'
   | 'custom-world'
+  | 'writing-style-select'
   | 'identity-setup'
   | 'talent-draw'
   | 'attribute-alloc'
@@ -39,5 +40,6 @@ export interface GameState {
   };
   selectedModel: string;
   disableThinking: boolean;
+  writingStyle: string;
   pendingDecision: { age: number; decision: Decision } | null;
 }
