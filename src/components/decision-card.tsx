@@ -87,7 +87,7 @@ export function DecisionCard({ decision, age, onConfirm }: DecisionCardProps) {
 
       {/* Confirm button */}
       <button
-        className={`w-full min-h-[40px] rounded-btn font-semibold text-sm transition-colors cursor-pointer btn-press ${
+        className={`w-full min-h-[40px] rounded-btn font-semibold text-sm transition-colors cursor-pointer ${
           canConfirm
             ? 'bg-[#a85656] text-white hover:bg-[#8f4a4a]'
             : 'bg-border/40 text-text-aux/50 cursor-not-allowed'

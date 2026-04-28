@@ -23,6 +23,7 @@ export type GameAction =
   | { type: 'TOGGLE_THINKING' }
   | { type: 'SET_WRITING_STYLE'; payload: string }
   | { type: 'SET_PENDING_DECISION'; payload: { age: number; decision: import('@/types/event').Decision } | null }
+  | { type: 'SET_LAST_CHOSEN_OPTION'; payload: string | null }
   | { type: 'APPLY_EVENT_RESULT'; payload: { age: number; event: GameEvent } }
   | { type: 'RESET_GAME' };
 
@@ -46,6 +47,7 @@ export const initialState: GameState = {
   disableThinking: false,
   writingStyle: 'warm_novel',
   pendingDecision: null,
+  lastChosenOption: null,
 };
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
@@ -114,6 +116,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'SET_PENDING_DECISION':
       return { ...state, pendingDecision: action.payload, isAutoPlaying: action.payload === null ? state.isAutoPlaying : false };
 
+    case 'SET_LAST_CHOSEN_OPTION':
+      return { ...state, lastChosenOption: action.payload };
+
     case 'APPLY_EVENT_RESULT': {
       const { age, event } = action.payload;
       // Apply attribute changes — defensive init
@@ -171,6 +176,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           resources: newResources,
           events: [...state.events, event],
           currentAge: age,
+          lastChosenOption: null,
           deathAge: age,
           deathReason: event.content,
           phase: 'life-summary',
@@ -213,7 +219,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         phase: isDead ? 'life-summary' : state.phase,
         deathAge: isDead ? age : state.deathAge,
         deathReason: isDead ? deathReason : state.deathReason,
-        ...(isDead ? { isAutoPlaying: false, pendingDecision: null } : {}),
+        lastChosenOption: event.isDecision && event.decision ? state.lastChosenOption : null,
+        ...(isDead ? { isAutoPlaying: false, pendingDecision: null, lastChosenOption: null } : {}),
       };
     }
 

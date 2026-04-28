@@ -61,7 +61,7 @@ export function LifeSummaryCard({ onConfirm }: LifeSummaryCardProps) {
 
       {/* Confirm button */}
       <button
-        className="w-full min-h-[40px] rounded-btn font-semibold text-sm bg-[#a85656] text-white hover:bg-[#8f4a4a] transition-colors cursor-pointer btn-press"
+        className="w-full min-h-[40px] rounded-btn font-semibold text-sm bg-[#a85656] text-white hover:bg-[#8f4a4a] transition-colors cursor-pointer"
         onClick={onConfirm}
       >
         查看人生总结

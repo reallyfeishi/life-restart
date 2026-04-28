@@ -12,27 +12,43 @@ import { GameMain } from './screens/game-main';
 import { DeathScreen } from './screens/death-screen';
 import { AI_MODELS, modelSupportsThinking } from '@/lib/ai/client';
 
-export function GameShell() {
-  const { state, dispatch } = useGame();
+function PhaseTransition({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex-1 min-h-0 overflow-hidden animate-page-in">
+      {children}
+    </div>
+  );
+}
 
+function PhaseContent({ phase }: { phase: string }) {
+  const { dispatch } = useGame();
   const showSummary = () => {
     dispatch({ type: 'SET_PHASE', payload: 'dead' });
   };
 
+  switch (phase) {
+    case 'world-select': return <WorldSelect />;
+    case 'custom-world': return <CustomWorld />;
+    case 'writing-style-select': return <WritingStyleSelect />;
+    case 'identity-setup': return <IdentitySetup />;
+    case 'talent-draw': return <TalentDraw />;
+    case 'attribute-alloc': return <AttributeAlloc />;
+    case 'fate-preview': return <FatePreview />;
+    case 'playing': return <GameMain />;
+    case 'life-summary': return <GameMain summaryMode onConfirmSummary={showSummary} />;
+    case 'dead': return <DeathScreen />;
+    default: return null;
+  }
+}
+
+export function GameShell() {
+  const { state } = useGame();
+
   return (
-    <div className="max-w-[460px] mx-auto flex flex-col h-dvh bg-bg-page page-texture relative">
-      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide animate-page-in" key={state.phase}>
-        {state.phase === 'world-select' && <WorldSelect />}
-        {state.phase === 'custom-world' && <CustomWorld />}
-        {state.phase === 'writing-style-select' && <WritingStyleSelect />}
-        {state.phase === 'identity-setup' && <IdentitySetup />}
-        {state.phase === 'talent-draw' && <TalentDraw />}
-        {state.phase === 'attribute-alloc' && <AttributeAlloc />}
-        {state.phase === 'fate-preview' && <FatePreview />}
-        {state.phase === 'playing' && <GameMain />}
-        {state.phase === 'life-summary' && <GameMain summaryMode onConfirmSummary={showSummary} />}
-        {state.phase === 'dead' && <DeathScreen />}
-      </div>
+    <div className="max-w-[640px] w-full mx-auto flex flex-col h-dvh bg-bg-page relative">
+      <PhaseTransition key={state.phase}>
+        <PhaseContent phase={state.phase} />
+      </PhaseTransition>
       <Footer />
     </div>
   );
@@ -43,7 +59,7 @@ function Footer() {
   const showThinkingToggle = modelSupportsThinking(state.selectedModel);
 
   return (
-    <div className="flex items-center justify-between py-2 px-4 text-xs text-text-muted border-t border-border bg-bg-page/80 backdrop-blur-sm flex-shrink-0 gap-2">
+    <div className="flex items-center justify-between py-2 px-4 text-xs text-text-muted border-t border-[rgba(0,0,0,0.08)] bg-bg-page/80 backdrop-blur-sm flex-shrink-0 gap-2">
       <span className="font-sans-sc">AI 驱动的人生模拟</span>
       <div className="flex items-center gap-2">
         {showThinkingToggle && (
@@ -60,7 +76,7 @@ function Footer() {
           </button>
         )}
         <select
-          className="bg-bg-card border border-border rounded-btn px-2 py-1 text-xs text-text-aux cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#a85656]/30"
+          className="bg-bg-card border border-[rgba(0,0,0,0.08)] rounded-btn px-2 py-1 text-xs text-text-aux cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#a85656]/30"
           value={state.selectedModel}
           onChange={(e) => setModel(e.target.value)}
         >

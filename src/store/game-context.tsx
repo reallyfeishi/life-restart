@@ -91,6 +91,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }, [dispatch]);
 
   const handleDecision = useCallback((optionId: string, optionText: string, customInput?: string) => {
+    dispatch({ type: 'SET_LAST_CHOSEN_OPTION', payload: optionText || customInput || '' });
     dispatch({ type: 'SET_PENDING_DECISION', payload: null });
     dispatch({ type: 'SET_AUTO_PLAY', payload: true });
     const nextYearWithDecision = async () => {

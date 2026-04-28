@@ -7,9 +7,9 @@ import { API_BASE_URL } from '@/lib/config';
 
 const RARITY_COLORS: Record<string, string> = {
   common: '#8a857b',
-  rare: '#7c5cbf',
-  epic: '#c4883a',
-  legendary: '#e8602a',
+  rare: '#4a90d9',
+  epic: '#7c5cbf',
+  legendary: '#c4883a',
 };
 
 const RARITY_LABELS: Record<string, string> = {
@@ -62,38 +62,35 @@ export function TalentDraw() {
     }
   }, [state.world, state.identity, state.selectedModel, state.disableThinking]);
 
+  const revealCards = useCallback(() => {
+    setTimeout(() => {
+      document.querySelectorAll('.talent-card').forEach((el, i) => {
+        setTimeout(() => el.classList.add('flipped'), i * 300);
+      });
+    }, 200);
+  }, []);
+
   const handleReveal = async () => {
     setIsLoading(true);
     const talents = await drawTalentsFromAPI();
     setDrawnTalents(talents);
     setRevealed(true);
     setIsLoading(false);
-    setTimeout(() => {
-      const cardEls = document.querySelectorAll('.talent-card');
-      cardEls.forEach((el, i) => {
-        setTimeout(() => el.classList.add('flipped'), i * 300);
-      });
-    }, 200);
+    revealCards();
   };
 
   const handleRedraw = async () => {
     if (redrawCount <= 0) return;
     setIsLoading(true);
     setRevealed(false);
-    const cardEls = document.querySelectorAll('.talent-card');
-    cardEls.forEach((el) => el.classList.remove('flipped'));
+    document.querySelectorAll('.talent-card').forEach((el) => el.classList.remove('flipped'));
     setTimeout(async () => {
       const talents = await drawTalentsFromAPI();
       setDrawnTalents(talents);
       setRevealed(true);
       setRedrawCount(prev => prev - 1);
       setIsLoading(false);
-      setTimeout(() => {
-        const cardEls = document.querySelectorAll('.talent-card');
-        cardEls.forEach((el, i) => {
-          setTimeout(() => el.classList.add('flipped'), i * 300);
-        });
-      }, 200);
+      revealCards();
     }, 300);
   };
 
@@ -104,14 +101,14 @@ export function TalentDraw() {
 
   if (!revealed) {
     return (
-      <div className="flex flex-col items-center min-h-dvh px-6 py-8">
-        <div className="text-center mb-8 mt-16">
+      <div className="flex flex-col items-center justify-center h-dvh bg-bg-page px-6">
+        <div className="text-center">
           <div className="text-3xl mb-4" style={{ color: '#a85656' }}>✦</div>
           <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">天赋抽取</h2>
           <p className="text-text-aux text-sm">命运将为你揭示三张天赋牌</p>
         </div>
         <button
-          className={`mt-8 min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#a85656] btn-press py-4 ${isLoading ? 'opacity-50' : ''}`}
+          className={`mt-8 min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#a85656] py-4 ${isLoading ? 'opacity-50' : ''}`}
           onClick={handleReveal}
           disabled={isLoading}
         >
@@ -122,30 +119,35 @@ export function TalentDraw() {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-dvh px-6 py-8">
-      <div className="text-center mb-6 mt-8">
+    <div className="flex flex-col items-center h-dvh bg-bg-page px-6 py-6">
+      <div className="w-full text-center pt-4 pb-4">
         <div className="text-2xl mb-2" style={{ color: '#a85656' }}>✦</div>
-        <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">你的天赋</h2>
+        <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-1">你的天赋</h2>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 w-full flex-1">
+      <div className="grid grid-cols-3 gap-3 w-full flex-1 overflow-hidden content-start">
         {drawnTalents.map((talent) => (
           <div key={talent.id} className="talent-card h-[180px]">
             <div className="talent-card-inner">
-              <div className="talent-card-front border border-border bg-bg-card flex items-center justify-center shadow-card">
-                <span className="text-3xl">✦</span>
+              {/* Front */}
+              <div className="talent-card-front border border-[rgba(0,0,0,0.08)] bg-bg-card flex items-center justify-center">
+                <span className="text-3xl" style={{ color: '#a85656' }}>✦</span>
               </div>
+              {/* Back */}
               <div
-                className="talent-card-back border rounded-card bg-bg-card p-3 flex flex-col justify-between shadow-card"
-                style={{ borderColor: RARITY_COLORS[talent.rarity] }}
+                className="talent-card-back border rounded-card p-3 flex flex-col justify-between text-center"
+                style={{
+                  borderColor: RARITY_COLORS[talent.rarity],
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  backgroundColor: RARITY_COLORS[talent.rarity] + '14',
+                }}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold" style={{ color: RARITY_COLORS[talent.rarity] }}>
-                      {RARITY_LABELS[talent.rarity]}
-                    </span>
-                  </div>
-                  <h4 className="font-serif-sc font-semibold text-sm text-text-title mb-1">{talent.name}</h4>
+                  <span className="text-xs font-semibold" style={{ color: RARITY_COLORS[talent.rarity] }}>
+                    {RARITY_LABELS[talent.rarity]}
+                  </span>
+                  <h4 className="font-serif-sc font-semibold text-sm text-text-title mt-1 mb-1">{talent.name}</h4>
                   <p className="text-text-aux text-xs leading-relaxed">{talent.description}</p>
                 </div>
               </div>
@@ -154,10 +156,10 @@ export function TalentDraw() {
         ))}
       </div>
 
-      <div className="w-full mt-4 space-y-2">
+      <div className="w-full space-y-2 pt-4 pb-16">
         {redrawCount > 0 && (
           <button
-            className={`w-full min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#a85656] border border-[#a85656] bg-transparent btn-press ${isLoading ? 'opacity-50' : ''}`}
+            className={`w-full min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-[#a85656] border border-[#a85656] bg-transparent ${isLoading ? 'opacity-50' : ''}`}
             onClick={handleRedraw}
             disabled={isLoading}
           >
@@ -165,7 +167,7 @@ export function TalentDraw() {
           </button>
         )}
         <button
-          className="w-full min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#a85656] btn-press"
+          className="w-full min-h-[46px] px-10 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white bg-[#a85656]"
           onClick={handleConfirm}
         >
           开始分配属性

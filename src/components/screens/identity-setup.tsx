@@ -18,30 +18,19 @@ const RACES = [
   { id: 'custom' as const, icon: '✨', label: '自定义' },
 ];
 
-// Parse character names from tingyuan world description
 function parseTingyuanCharacters(description: string): string[] {
-  // Extract text after "有以下成员：" until the period
   const match = description.match(/有以下成员[：:](.+?)[。\.]/);
   if (!match) return [];
-  const membersStr = match[1];
-  // Split by comma/Chinese comma and clean up
-  return membersStr.split(/[，,]/).map(name => {
-    // Remove parenthetical descriptions like "（小男娘）"
-    return name.replace(/（[^）]*）/g, '').replace(/\([^)]*\)/g, '').trim();
-  }).filter(name => name.length > 0);
+  return match[1].split(/[，,]/).map(name =>
+    name.replace(/（[^）]*）/g, '').replace(/\([^)]*\)/g, '').trim()
+  ).filter(name => name.length > 0);
 }
 
-// Check if extraInfo mentions playing as a specific character
 function detectPlayingAs(extraInfo: string, characters: string[]): string | null {
   const text = extraInfo.trim();
   if (!text) return null;
-
-  // Check for patterns like "我是花小猪" or just "花小猪"
   for (const char of characters) {
-    // Check if the character name appears in extraInfo
-    if (text.includes(char)) {
-      return char;
-    }
+    if (text.includes(char)) return char;
   }
   return null;
 }
@@ -53,52 +42,55 @@ export function IdentitySetup() {
   const [genderCustom, setGenderCustom] = useState(state.identity?.genderCustom || '');
   const [tingyuanCharacters, setTingyuanCharacters] = useState<string[]>([]);
   const [tingyuanShowAll, setTingyuanShowAll] = useState(false);
-  const [detectedCharacter, setDetectedCharacter] = useState<string | null>(null);
+  const detectedCharacter = tingyuanCharacters.length > 0 && extraInfo.trim()
+    ? detectPlayingAs(extraInfo, tingyuanCharacters)
+    : null;
 
-  // Load tingyuan characters if using special world
   useEffect(() => {
     if (state.world?.id === 'special_tingyuan') {
       fetch('/special/tingyuan.txt')
         .then(r => r.text())
         .then(content => {
-          const chars = parseTingyuanCharacters(content);
-          setTingyuanCharacters(chars);
+          setTingyuanCharacters(parseTingyuanCharacters(content));
         })
         .catch(() => {});
     }
   }, [state.world?.id]);
 
-  // Detect playing as character when extraInfo changes
-  useEffect(() => {
-    if (tingyuanCharacters.length > 0 && extraInfo.trim()) {
-      const detected = detectPlayingAs(extraInfo, tingyuanCharacters);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDetectedCharacter(detected);
-    } else {
-      setDetectedCharacter(null);
-    }
-  }, [extraInfo, tingyuanCharacters]);
-
   const gender = state.identity?.gender;
   const race = state.identity?.race;
   const isCustomRace = race === 'custom';
-
   const canProceed = !!gender && (!!race && (!isCustomRace || raceCustom.trim()));
 
   const handleNext = () => {
-    setIdentity({ gender, race, genderCustom: gender === 'custom' ? genderCustom : undefined, raceCustom: isCustomRace ? raceCustom : undefined, extraInfo, playingAs: detectedCharacter || undefined });
+    setIdentity({
+      gender, race,
+      genderCustom: gender === 'custom' ? genderCustom : undefined,
+      raceCustom: isCustomRace ? raceCustom : undefined,
+      extraInfo,
+      playingAs: detectedCharacter || undefined,
+    });
     dispatch({ type: 'SET_PHASE', payload: 'talent-draw' });
   };
 
   return (
-    <div className="flex flex-col items-center min-h-dvh px-6 py-8">
-      <div className="text-center mb-8">
-        <div className="text-2xl mb-2" style={{ color: '#a85656' }}>✦</div>
-        <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-2">身份设定</h2>
+    <div className="flex flex-col items-center h-dvh bg-bg-page px-6 py-6">
+      {/* Header */}
+      <div className="w-full text-center pt-4 pb-6">
+        <div className="relative inline-block mb-3">
+          <div className="text-2xl">⏳</div>
+        </div>
+        <h2 className="font-serif-sc text-2xl font-bold text-text-title mb-1">身份设定</h2>
         <p className="text-text-aux text-sm">选择你这一世的性别和种族</p>
+        <div className="flex items-center justify-center mt-4 gap-2">
+          <div className="h-px flex-1 max-w-[120px] bg-border" />
+          <div className="text-sm" style={{ color: '#a85656' }}>✦</div>
+          <div className="h-px flex-1 max-w-[120px] bg-border" />
+        </div>
       </div>
 
-      <div className="w-full space-y-6 flex-1">
+      <div className="w-full space-y-4 flex-1 overflow-y-auto scrollbar-hide px-1">
+        {/* Gender */}
         <div>
           <h3 className="font-serif-sc font-semibold text-text-title text-base mb-3">性别</h3>
           <div className="grid grid-cols-3 gap-3">
@@ -108,8 +100,8 @@ export function IdentitySetup() {
                 onClick={() => setIdentity({ gender: g.id })}
                 className={`border rounded-card p-4 flex flex-col items-center gap-2 transition-all duration-fast cursor-pointer ${
                   gender === g.id
-                    ? 'border-[#4afa5] bg-bg-card shadow-card'
-                    : 'border-border bg-bg-card hover:shadow-card'
+                    ? 'border-[#a85656] bg-bg-card'
+                    : 'border-[rgba(0,0,0,0.08)] bg-bg-card'
                 }`}
               >
                 <span className="text-2xl">{g.icon}</span>
@@ -119,6 +111,7 @@ export function IdentitySetup() {
           </div>
         </div>
 
+        {/* Race */}
         <div>
           <h3 className="font-serif-sc font-semibold text-text-title text-base mb-3">种族</h3>
           <div className="grid grid-cols-3 gap-3">
@@ -128,8 +121,8 @@ export function IdentitySetup() {
                 onClick={() => setIdentity({ race: r.id })}
                 className={`border rounded-card p-4 flex flex-col items-center gap-2 transition-all duration-fast cursor-pointer ${
                   race === r.id
-                    ? 'border-[#a85656] bg-bg-card shadow-card'
-                    : 'border-border bg-bg-card hover:shadow-card'
+                    ? 'border-[#a85656] bg-bg-card'
+                    : 'border-[rgba(0,0,0,0.08)] bg-bg-card'
                 }`}
               >
                 <span className="text-2xl">{r.icon}</span>
@@ -139,7 +132,7 @@ export function IdentitySetup() {
           </div>
           {isCustomRace && (
             <input
-              className="w-full mt-3 border border-border rounded-btn p-3 text-sm text-text-body bg-bg-card focus:outline-none focus:ring-1 focus:ring-[#a85656]/30 transition-all"
+              className="w-full mt-3 border border-[rgba(0,0,0,0.08)] rounded-btn p-3 text-sm text-text-body bg-bg-card focus:outline-none focus:ring-1 focus:ring-[#a85656]/30"
               placeholder="请输入自定义种族名称..."
               value={raceCustom}
               onChange={(e) => setRaceCustom(e.target.value)}
@@ -148,21 +141,21 @@ export function IdentitySetup() {
           )}
         </div>
 
+        {/* Extra info */}
         <div>
-          <h3 className="font-serif-sc font-semibold text-text-title text-base mb-2">额外信息（可选）</h3>
+          <h3 className="font-serif-sc font-semibold text-text-title text-base mb-2">额外信息 <span className="text-text-muted font-normal">（可选）</span></h3>
           <textarea
-            className="w-full border border-border rounded-card p-3 text-sm text-text-body bg-bg-card resize-none focus:outline-none focus:ring-1 focus:ring-[#a85656]/30 transition-all"
+            className="w-full border border-[rgba(0,0,0,0.08)] rounded-card p-3 text-sm text-text-body bg-bg-card resize-none focus:outline-none focus:ring-1 focus:ring-[#a85656]/30"
             rows={3}
-            maxLength={100}
+            maxLength={300}
             placeholder="告诉命运编织者更多关于你的角色的事... 如：从小失明、有一个宿敌、前世是国王..."
             value={extraInfo}
             onChange={(e) => setExtraInfo(e.target.value)}
           />
-          <p className="text-right text-xs text-text-aux mt-1">{extraInfo.length}/100</p>
+          <p className="text-right text-xs text-text-aux mt-1">{extraInfo.length}/300</p>
 
-          {/* Tingyuan world character selection hint */}
           {state.world?.id === 'special_tingyuan' && tingyuanCharacters.length > 0 && (
-            <div className="mt-3 p-3 bg-bg-card border border-border rounded-card">
+            <div className="mt-3 p-3 border border-[rgba(0,0,0,0.08)] rounded-card bg-bg-card">
               <p className="text-xs text-text-aux mb-2">输入&apos;我是[角色名]&apos;或直接输入角色名即可扮演该角色：</p>
               <div className="flex flex-wrap gap-1">
                 {(tingyuanShowAll ? tingyuanCharacters : tingyuanCharacters.slice(0, 10)).map(char => (
@@ -195,14 +188,23 @@ export function IdentitySetup() {
         </div>
       </div>
 
-      <button
-        className="w-full mt-4 min-h-[46px] px-6 rounded-btn font-semibold text-[15px] transition-colors duration-fast cursor-pointer select-none text-white btn-press py-3"
-        style={{ backgroundColor: canProceed ? '#a85656' : '#b8b3a8' }}
-        disabled={!canProceed}
-        onClick={handleNext}
-      >
-        下一步
-      </button>
+      {/* Bottom buttons */}
+      <div className="w-full flex gap-3 pb-16 pt-4">
+        <button
+          className="flex-1 min-h-[46px] rounded-btn font-semibold text-[15px] cursor-pointer select-none text-[#a85656] border border-[#a85656] bg-bg-card"
+          onClick={() => dispatch({ type: 'SET_PHASE', payload: 'world-select' })}
+        >
+          返回
+        </button>
+        <button
+          className="flex-1 min-h-[46px] rounded-btn font-semibold text-[15px] cursor-pointer select-none text-white"
+          style={{ backgroundColor: canProceed ? '#a85656' : '#b8b3a8' }}
+          disabled={!canProceed}
+          onClick={handleNext}
+        >
+          下一步
+        </button>
+      </div>
     </div>
   );
 }

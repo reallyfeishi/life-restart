@@ -42,4 +42,5 @@ export interface GameState {
   disableThinking: boolean;
   writingStyle: string;
   pendingDecision: { age: number; decision: Decision } | null;
+  lastChosenOption: string | null;
 }

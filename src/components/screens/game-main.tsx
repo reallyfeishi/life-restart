@@ -17,7 +17,6 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Auto-play
   useEffect(() => {
     if (state.isAutoPlaying && !summaryMode) {
       autoPlayRef.current = setInterval(() => {
@@ -29,7 +28,6 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
     };
   }, [state.isAutoPlaying, state.autoPlaySpeed, nextYear, summaryMode]);
 
-  // Auto-scroll timeline
   useEffect(() => {
     if (timelineRef.current) {
       timelineRef.current.scrollTop = timelineRef.current.scrollHeight;
@@ -50,9 +48,9 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
     state.identity?.race || '';
 
   return (
-    <div className="flex flex-col h-dvh">
-      {/* Header */}
-      <div className="bg-bg-card border-b border-border px-4 py-3 flex-shrink-0">
+    <div className="flex flex-col h-dvh bg-bg-page">
+      {/* Header info card */}
+      <div className="border-b border-[rgba(0,0,0,0.08)] px-4 py-3 flex-shrink-0 bg-bg-card">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
             <span className="text-sm font-serif-sc font-semibold text-text-title">{state.world?.icon} {state.world?.name}</span>
@@ -61,10 +59,10 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
           <div className="flex items-center gap-2">
             <span className="text-sm font-serif-sc text-text-title">{genderIcon}{state.currentAge + 1}岁</span>
             <button
-              className={`px-3 py-1 rounded-btn text-xs font-semibold transition-colors cursor-pointer btn-press ${
+              className={`px-3 py-1 rounded-btn text-xs font-semibold transition-colors cursor-pointer ${
                 state.isAutoPlaying
                   ? 'bg-[#5a8c5a] text-white'
-                  : 'bg-bg-page text-text-aux border border-border'
+                  : 'bg-bg-page text-text-aux border border-[rgba(0,0,0,0.08)]'
               }`}
               onClick={toggleAutoPlay}
             >
@@ -129,7 +127,7 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
           return (
             <div
               key={index}
-              className={`bg-bg-card border border-border rounded-card p-3 shadow-card animate-fade-in ${
+              className={`border border-[rgba(0,0,0,0.08)] rounded-card p-3 bg-bg-card animate-fade-in ${
                 isLast ? 'border-l-4 border-l-[#a85656] pl-3' : ''
               }`}
             >
@@ -173,53 +171,36 @@ export function GameMain({ summaryMode, onConfirmSummary }: GameMainProps) {
           );
         })}
 
-        {/* Inline Decision Card */}
-        {state.pendingDecision && (
-          <div className="animate-fade-in">
-            <DecisionCard
-              key={state.pendingDecision.age}
-              decision={state.pendingDecision.decision}
-              age={state.pendingDecision.age}
-              onConfirm={(optionId, optionText, customInput) => {
-                handleDecision(optionId, optionText, customInput);
-              }}
-            />
-          </div>
-        )}
-
-        {/* Life Summary Card */}
-        {summaryMode && onConfirmSummary && (
-          <div className="animate-fade-in">
-            <LifeSummaryCard onConfirm={onConfirmSummary} />
+        {state.lastChosenOption && (
+          <div className="ml-2 mt-2 p-3 bg-bg-card rounded-card border-l-[3px] border-l-[#a85656] animate-fade-in">
+            <div className="flex items-start gap-2">
+              <span className="text-xs text-text-aux flex-shrink-0 mt-0.5">你的选择</span>
+              <span className="text-sm text-text-body">{state.lastChosenOption}</span>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Bottom action */}
-      {!summaryMode && (
-        <div className="bg-bg-card border-t border-border px-4 py-3 flex-shrink-0">
-          {state.pendingDecision ? (
-            <div className="text-center text-xs text-text-aux">
-              请做出你的选择
-            </div>
-          ) : state.isAutoPlaying ? (
-            <button
-              className="w-full min-h-[40px] rounded-btn font-semibold text-sm text-text-aux border border-border bg-bg-page cursor-pointer btn-press"
-              onClick={toggleAutoPlay}
-            >
-              暂停播放
-            </button>
-          ) : (
-            <button
-              className="w-full min-h-[40px] rounded-btn font-semibold text-sm text-text-aux border border-border bg-bg-page cursor-pointer btn-press"
-              onClick={nextYear}
-              disabled={state.isAutoPlaying}
-            >
-              轻触，让岁月流转
-            </button>
-          )}
+      {/* Decision / Summary card — fixed below timeline */}
+      {state.pendingDecision && (
+        <div className="px-4 py-3 flex-shrink-0">
+          <DecisionCard
+            key={state.pendingDecision.age}
+            decision={state.pendingDecision.decision}
+            age={state.pendingDecision.age}
+            onConfirm={(optionId, optionText, customInput) => {
+              handleDecision(optionId, optionText, customInput);
+            }}
+          />
         </div>
       )}
+
+      {summaryMode && onConfirmSummary && (
+        <div className="px-4 py-3 flex-shrink-0">
+          <LifeSummaryCard onConfirm={onConfirmSummary} />
+        </div>
+      )}
+
     </div>
   );
 }

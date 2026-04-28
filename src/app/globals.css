@@ -1,12 +1,17 @@
 @import "tailwindcss";
 
+/* Page background - fills entire viewport */
+body {
+  background-color: #f6f3ed;
+}
+
 @theme inline {
   --color-bg-page: #f6f3ed;
   --color-bg-content: #faf8f4;
-  --color-bg-card: #ffffff;
-  --color-bg-card-hover: #fdfcfa;
-  --color-border: #e8e2d9;
-  --color-border-light: #ede8e0;
+  --color-bg-card: #f6f3ed;
+  --color-bg-card-hover: #ede8e0;
+  --color-border: rgba(0,0,0,0.08);
+  --color-border-light: rgba(0,0,0,0.05);
   --color-text-title: #1a1814;
   --color-text-body: #3d3a34;
   --color-text-aux: #8a857b;
@@ -45,8 +50,8 @@
   --duration-normal: 300ms;
 
   /* Shadows */
-  --shadow-card: 0 1px 3px rgba(26, 24, 20, 0.08);
-  --shadow-card-hover: 0 2px 8px rgba(26, 24, 20, 0.12);
+  --shadow-card: none;
+  --shadow-card-hover: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 /* Custom font classes */
@@ -58,9 +63,64 @@
   font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
 }
 
-/* Page texture background */
-.page-texture {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4d0c8' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+/* Fade in animation (page entrance) */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Toast slide-in animation */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+.animate-slide-out {
+  animation: slideOutRight 0.3s ease-in forwards;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Button press effect — removed scale animation */
+
+/* Achievement badge glow */
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 4px rgba(232, 96, 42, 0.3); }
+  50% { box-shadow: 0 0 12px rgba(232, 96, 42, 0.6); }
+}
+
+.achievement-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Page transition: fade in with delay (simulates fade-out → pause → fade-in) */
+@keyframes fadeInPage {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-page-in {
+  animation: fadeInPage 0.25s ease-out 0.08s both;
 }
 
 /* Talent card flip animation */
@@ -91,94 +151,4 @@
 
 .talent-card-back {
   transform: rotateY(180deg);
-}
-
-/* Typewriter cursor effect */
-.typewriter::after {
-  content: '|';
-  animation: blink 1s step-end infinite;
-}
-
-@keyframes blink {
-  from, to { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* Loading dots animation */
-@keyframes loading-dots {
-  0%, 80%, 100% { opacity: 0; }
-  40% { opacity: 1; }
-}
-
-.loading-dot-1 { animation: loading-dots 1.4s infinite; }
-.loading-dot-2 { animation: loading-dots 1.4s infinite 0.2s; }
-.loading-dot-3 { animation: loading-dots 1.4s infinite 0.4s; }
-
-/* Fade in animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* Toast slide-in animation */
-@keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOutRight {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(100%); opacity: 0; }
-}
-
-.animate-slide-in {
-  animation: slideInRight 0.3s ease-out forwards;
-}
-
-.animate-slide-out {
-  animation: slideOutRight 0.3s ease-in forwards;
-}
-
-/* Smooth scroll for timeline */
-.timeline-scroll {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Hide scrollbar but keep scroll functionality */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Button press effect */
-.btn-press:active {
-  transform: scale(0.97);
-}
-
-/* Achievement badge glow */
-@keyframes glow {
-  0%, 100% { box-shadow: 0 0 4px rgba(232, 96, 42, 0.3); }
-  50% { box-shadow: 0 0 12px rgba(232, 96, 42, 0.6); }
-}
-
-.achievement-glow {
-  animation: glow 2s ease-in-out infinite;
-}
-
-/* Page transition animation */
-@keyframes pageIn {
-  from { opacity: 0; transform: translateX(16px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.animate-page-in {
-  animation: pageIn 0.3s ease-out;
 }

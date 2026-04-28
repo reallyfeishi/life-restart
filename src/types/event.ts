@@ -23,6 +23,7 @@ export interface GameEvent {
   decision?: Decision;
   isEasterEgg?: boolean;
   achievementTrigger?: string;
+  chosenOption?: string;
 }
 
 export interface LifeRecord {
