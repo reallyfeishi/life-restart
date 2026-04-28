@@ -11,18 +11,9 @@ const EXTRA_WORLDS = [
   { id: 'palace', name: '朱门深宫', icon: '👑' },
 ];
 
-const HOT_THEMES = [
-  { id: 'medieval_fantasy', name: '中世纪奇幻', icon: '⚔️' },
-  { id: 'ww2', name: '第二次世界大战', icon: '🍇' },
-  { id: 'dnd', name: '龙与地下城', icon: '🐉' },
-  { id: 'eastern_fantasy', name: '东方幻想乡', icon: '🌿' },
-  { id: 'magical_girl', name: '魔法少女', icon: '' },
-  { id: 'three_body', name: '三体世界', icon: '' },
-  { id: 'douluo', name: '斗罗大陆', icon: '' },
-  { id: 'pokemon', name: '宝可梦训练师', icon: '🔴' },
-  { id: 'warhammer40k', name: '战锤40K', icon: '⚙️' },
-  { id: 'naruto', name: '火影忍者', icon: '🌀' },
-  { id: 'zombie', name: '丧尸末日', icon: '🧟' },
+const HOT_THEME_IDS = [
+  'medieval_fantasy', 'ww2', 'dnd', 'eastern_fantasy', 'magical_girl',
+  'three_body', 'douluo', 'pokemon', 'warhammer40k', 'naruto', 'zombie',
 ];
 
 const MAIN_WORLD_IDS = ['modern', 'xianxia', 'magic', 'cyberpunk', 'scifi', 'custom', 'more'];
@@ -140,11 +131,12 @@ export function WorldSelect() {
                 {/* Hot themes */}
                 <p className="text-xs text-text-muted mb-2">热门主题</p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {HOT_THEMES.map(t => (
+                  {WORLDS.filter(w => HOT_THEME_IDS.includes(w.id)).map(t => (
                     <button
                       key={t.id}
                       onClick={() => {
-                        dispatch({ type: 'SET_PHASE', payload: 'custom-world' });
+                        selectWorld(t);
+                        setShowMoreWorlds(false);
                       }}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-btn bg-bg-page border border-[rgba(0,0,0,0.06)] text-sm text-text-body hover:bg-bg-card-hover cursor-pointer transition-colors"
                     >
